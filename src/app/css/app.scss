@@ -1,0 +1,183 @@
+@use 'sass:color';
+
+// IMPORTS
+@import '_variables';
+@import '_fonts';
+@import '_spacing';
+
+/* Definición de variables CSS por defecto (tema default/apuestasroyal) */
+:root {
+  /* bases */
+  --app-primary: #{$app-primary};
+  --app-secondary: #{$app-secondary};
+  --app-tertiary: #{$app-tertiary};
+  --app-background: #{$app-tertiary};
+
+  --app-danger: #{$app-danger};
+  --app-info: #{$app-info};
+  --app-warning: #{$app-warning};
+  --app-success: #{$app-success};
+
+  --app-input: #{$app-input};
+  --app-tertiary-opacity: #{$app-tertiary-opacity};
+  --app-background-opacity: #{$app-background-opacity};
+
+  /* tones primary */
+  --app-primary-50: #{map-get($app-primary--tones, 50)};
+  --app-primary-100: #{map-get($app-primary--tones, 100)};
+  --app-primary-200: #{map-get($app-primary--tones, 200)};
+  --app-primary-300: #{map-get($app-primary--tones, 300)};
+  --app-primary-400: #{map-get($app-primary--tones, 400)};
+  --app-primary-500: #{map-get($app-primary--tones, 500)};
+  --app-primary-600: #{map-get($app-primary--tones, 600)};
+  --app-primary-700: #{map-get($app-primary--tones, 700)};
+  --app-primary-800: #{map-get($app-primary--tones, 800)};
+  --app-primary-900: #{map-get($app-primary--tones, 900)};
+  --app-primary-950: #{map-get($app-primary--tones, 950)};
+
+  /* tones secondary */
+  --app-secondary-50: #{map-get($app-secondary--tones, 50)};
+  --app-secondary-100: #{map-get($app-secondary--tones, 100)};
+  --app-secondary-200: #{map-get($app-secondary--tones, 200)};
+  --app-secondary-300: #{map-get($app-secondary--tones, 300)};
+  --app-secondary-400: #{map-get($app-secondary--tones, 400)};
+  --app-secondary-500: #{map-get($app-secondary--tones, 500)};
+  --app-secondary-600: #{map-get($app-secondary--tones, 600)};
+  --app-secondary-700: #{map-get($app-secondary--tones, 700)};
+  --app-secondary-800: #{map-get($app-secondary--tones, 800)};
+  --app-secondary-900: #{map-get($app-secondary--tones, 900)};
+  --app-secondary-950: #{map-get($app-secondary--tones, 950)};
+
+  /* tones tertiary */
+  --app-tertiary-50: #{map-get($app-tertiary--tones, 50)};
+  --app-tertiary-100: #{map-get($app-tertiary--tones, 100)};
+  --app-tertiary-200: #{map-get($app-tertiary--tones, 200)};
+  --app-tertiary-300: #{map-get($app-tertiary--tones, 300)};
+  --app-tertiary-400: #{map-get($app-tertiary--tones, 400)};
+  --app-tertiary-500: #{map-get($app-tertiary--tones, 500)};
+  --app-tertiary-600: #{map-get($app-tertiary--tones, 600)};
+  --app-tertiary-700: #{map-get($app-tertiary--tones, 700)};
+  --app-tertiary-800: #{map-get($app-tertiary--tones, 800)};
+  --app-tertiary-900: #{map-get($app-tertiary--tones, 900)};
+  --app-tertiary-950: #{map-get($app-tertiary--tones, 950)};
+}
+
+// COLORS utilidades referenciando variables CSS
+$color-names:
+  'primary', 'secondary', 'tertiary', 'danger', 'info', 'warning', 'success';
+$tone-names: 'primary', 'secondary', 'tertiary';
+$tone-steps: 50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950;
+
+@each $name in $color-names {
+  .text-app-#{$name} {
+    color: var(--app-#{$name}) !important;
+  }
+  .bg-app-#{$name} {
+    background-color: var(--app-#{$name}) !important;
+  }
+  .border-app-#{$name} {
+    border-left: 1px solid var(--app-#{$name}) !important;
+    border-right: 1px solid var(--app-#{$name}) !important;
+    border-top: 1px solid var(--app-#{$name}) !important;
+    border-bottom: 1px solid var(--app-#{$name}) !important;
+  }
+  .divider-app-#{$name} {
+    background-color: var(--app-#{$name}) !important;
+  }
+}
+
+@each $name in $tone-names {
+  @each $step in $tone-steps {
+    .text-app-#{$name}-#{$step} {
+      color: var(--app-#{$name}-#{$step}) !important;
+    }
+    .bg-app-#{$name}-#{$step} {
+      background-color: var(--app-#{$name}-#{$step}) !important;
+    }
+    .border-app-#{$name}-#{$step} {
+      border-left: 1px solid var(--app-#{$name}-#{$step}) !important;
+      border-right: 1px solid var(--app-#{$name}-#{$step}) !important;
+      border-top: 1px solid var(--app-#{$name}-#{$step}) !important;
+      border-bottom: 1px solid var(--app-#{$name}-#{$step}) !important;
+    }
+    .separator-app-#{$name}-#{$step} {
+      background: var(--app-#{$name}-#{$step}) !important;
+    }
+  }
+}
+
+.app-primary-separator {
+  border: 0;
+  background: rgb(0 0 0);
+  margin: 0;
+  transition:
+    background 0.3s,
+    opacity 0.3s;
+  flex-shrink: 0;
+}
+
+// FONTS
+html,
+body {
+  font-family: $regular;
+  font-size: 15px;
+  background-color: var(--app-background);
+  color: var(--app-secondary);
+  @media (max-width: 600px) {
+    font-size: 13px !important;
+  }
+}
+
+.q-field--standout.q-field--dark.q-field--highlighted .q-field__control {
+  background: rgba(255, 255, 255, 0.07) !important;
+}
+
+.q-field--standout.q-field--dark.q-field--highlighted .q-field__native {
+  color: white !important;
+}
+
+.q-field--standout.q-field--dark.q-field--highlighted .q-field__prepend {
+  color: white !important;
+}
+
+.q-field--standout.q-field--highlighted .q-field__control {
+  box-shadow: 0 0 0 0 !important;
+  background: #000 !important;
+}
+
+.no-select {
+  user-select: none;
+}
+
+.page {
+  padding-top: 5em;
+  min-height: 800px !important;
+  @media (max-width: 1024px) {
+    padding-top: 2em;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--app-secondary);
+}
+
+.q-carousel__navigation--right {
+  left: 16px !important;
+  right: auto !important;
+}
+
+/* Utilidades adicionales específicas */
+.bg-app-background {
+  background: var(--app-background-opacity) !important;
+}
+.bg-app-tertiary-opacity {
+  background: var(--app-tertiary-opacity) !important;
+}
+
+@function hex-to-rgb-string($hex-color) {
+  @return '#{color.red($hex-color)}, #{color.green($hex-color)}, #{color.blue($hex-color)}';
+}

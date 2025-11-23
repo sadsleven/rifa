@@ -1,0 +1,54 @@
+// Custom colors
+$app-primary: #401d6c;
+$app-primary--tones: (
+  50: #f7f4fe,
+  100: #f0ebfc,
+  200: #e3dafa,
+  300: #cdbcf6,
+  400: #b596ef,
+  500: #9c6ce6,
+  600: #8e4cdb,
+  700: #7e3ac7,
+  800: #6930a7,
+  900: #582989,
+  950: $app-primary,
+);
+
+$app-secondary: #95d23d;
+$app-secondary--tones: (
+  50: #f5fce9,
+  100: #e9f7d0,
+  200: #d4f0a6,
+  300: #b6e472,
+  400: $app-secondary,
+  500: #7bba28,
+  600: #5e941c,
+  700: #48711a,
+  800: #3c5a1a,
+  900: #334d1a,
+  950: #192a09,
+);
+
+$app-tertiary: #120d3c;
+$app-tertiary--tones: (
+  50: #eaefff,
+  100: #d9e1ff,
+  200: #bac6ff,
+  300: #91a0ff,
+  400: #656cff,
+  500: #4942ff,
+  600: #3b21ff,
+  700: #3316ec,
+  800: #2915be,
+  900: #261b94,
+  950: $app-tertiary,
+);
+
+$app-danger: #f04438;
+$app-info: #2e90fa;
+$app-warning: #f79009;
+$app-success: #12b76a;
+
+$app-input: rgba(60, 108, 217, 0.23);
+$app-tertiary-opacity: rgba(241, 245, 249, 0.16);
+$app-background-opacity: rgba(5, 25, 35, 0.05);

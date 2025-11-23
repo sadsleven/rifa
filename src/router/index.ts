@@ -1,10 +1,12 @@
-import { defineRouter } from '#q-app/wrappers';
+import { route } from 'quasar/wrappers';
 import {
   createMemoryHistory,
   createRouter,
   createWebHashHistory,
   createWebHistory,
 } from 'vue-router';
+import { useAuthStore } from '@modules/auth/domain/store'; // Asegúrate de ajustar la ruta según tu estructura de archivos
+
 import routes from './routes';
 
 /*
@@ -16,7 +18,7 @@ import routes from './routes';
  * with the Router instance.
  */
 
-export default defineRouter(function (/* { store, ssrContext } */) {
+export default route(function (/* { store, ssrContext } */) {
   const createHistory = process.env.SERVER
     ? createMemoryHistory
     : process.env.VUE_ROUTER_MODE === 'history'
@@ -31,6 +33,26 @@ export default defineRouter(function (/* { store, ssrContext } */) {
     // quasar.conf.js -> build -> vueRouterMode
     // quasar.conf.js -> build -> publicPath
     history: createHistory(process.env.VUE_ROUTER_BASE),
+  });
+
+  Router.beforeEach((to, from, next) => {
+    const authStore = useAuthStore();
+    const isAuthenticated = authStore.GetToken && authStore.GetToken !== '';
+
+    // Check if the route requires authentication
+    if (to.meta.requiresAuth) {
+      if (!isAuthenticated) {
+        next({ path: '/' });
+      } else {
+        next();
+      }
+    } else {
+      if (isAuthenticated) {
+        next({ path: '/users' });
+      } else {
+        next();
+      }
+    }
   });
 
   return Router;

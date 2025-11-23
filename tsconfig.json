@@ -1,3 +1,68 @@
 {
-  "extends": "./.quasar/tsconfig.json"
+  "extends": "./.quasar/tsconfig.json",
+  "compilerOptions": {
+    "composite": true,
+    "declarationMap": true,
+    "noImplicitOverride": true,
+    "noImplicitReturns": false,
+    "skipDefaultLibCheck": true,
+    "inlineSourceMap": false,
+    "useUnknownInCatchVariables": true,
+    "experimentalDecorators": true,
+    "module": "ESNext",
+    "declaration": true,
+    "removeComments": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "target": "ESNext",
+    "strict": false,
+    "lib": [
+      "ESNext",
+      "DOM"
+    ],
+    "types": ["node"],
+    "typeRoots": [
+      "./node_modules/@types"
+    ],
+    "sourceMap": true,
+    "outDir": "./dist",
+    "baseUrl": ".",
+    "incremental": true,
+    "skipLibCheck": true,
+    "strictNullChecks": false,
+    "exactOptionalPropertyTypes": false,
+    "noImplicitAny": false,
+    "strictBindCallApply": false,
+    "forceConsistentCasingInFileNames": false,
+    "noFallthroughCasesInSwitch": false,
+    "noUncheckedIndexedAccess": false,
+    "resolveJsonModule": true,
+    "moduleResolution": "node",
+    "isolatedModules": true,
+     "paths": {
+      "app/*": ["./*"],
+      "@app/*": ["src/app/*"],
+      "@css/*": ["src/app/css/*"],
+      "@assets/*": ["src/app/assets/*"],
+      "@boot/*": ["src/app/boot/*"],
+      "@i18n/*": ["src/app/i18n/*"],
+      "@i18n": ["src/app/i18n/index"],
+      "@stores/*": ["src/app/stores/*"],
+      "@modules/*": ["src/modules/*"],
+      "@common/*": ["src/common/*"],
+      "@config/*": ["src/config/*"],
+      "#q-app/wrappers": ["./node_modules/@quasar/app-vite/types/app-wrappers.d.ts"],
+      "#q-app/*": ["./node_modules/@quasar/app-vite/types/*"]
+    }
+  },
+  "include": [
+    "./src",
+    "./typings/*",
+    ".eslintrc.js",
+    "./src/**/*.ts",
+    "./src/**/*.d.ts",
+    "./src/**/*.tsx",
+    "./src/**/*.vue",
+     "env.d.ts"
+  ]
 }
