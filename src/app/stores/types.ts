@@ -1,4 +1,4 @@
-import { Store } from 'pinia';
+import type { Store } from 'pinia';
 
 /** Some type helpers */
 
@@ -6,9 +6,15 @@ export type PiniaActionAdaptor<
   Type extends Record<string, (...args: any) => any>,
   StoreType extends Store,
 > = {
-  [Key in keyof Type]: (this: StoreType, ...p: Parameters<Type[Key]>) => ReturnType<Type[Key]>;
+  [Key in keyof Type]: (
+    this: StoreType,
+    ...p: Parameters<Type[Key]>
+  ) => ReturnType<Type[Key]>;
 };
 
 export type PiniaGetterAdaptor<GettersType, StoreType extends Store> = {
-  [Key in keyof GettersType]: (this: StoreType, state: StoreType['$state']) => GettersType[Key];
+  [Key in keyof GettersType]: (
+    this: StoreType,
+    state: StoreType['$state']
+  ) => GettersType[Key];
 };

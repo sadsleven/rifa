@@ -1,4 +1,4 @@
-import { PiniaGetters, State } from './types';
+import type { PiniaGetters, State } from './types';
 
 const getters: PiniaGetters = {
   GetToken: (state: State) => {

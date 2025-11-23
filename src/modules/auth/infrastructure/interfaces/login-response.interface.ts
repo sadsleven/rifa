@@ -1,9 +1,8 @@
-import { IAPIResponse } from '@common/interfaces';
-import { IUser } from '@modules/auth/infrastructure/interfaces/user.interface';
+import type { IAPIResponse } from '@common/interfaces';
+import type { IUser } from '@modules/auth/infrastructure/interfaces/user.interface';
 
-
-export interface ILoginResponse  extends IAPIResponse<{
+export type ILoginResponse = IAPIResponse<{
   user: IUser;
-  expires: number,
+  expires: number;
   token: string;
-}> {}
+}>;

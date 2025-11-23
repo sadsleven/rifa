@@ -23,17 +23,32 @@ const routes: RouteRecordRaw[] = [
       {
         path: '/roles',
         component: () =>
-          import('@modules/roles/presentation/pages/RolesPage.vue'),
+          import('@modules/roles/presentation/pages/RolesAdminPage.vue'),
       },
       {
         path: '/roles/create',
         component: () =>
-          import('@modules/roles/presentation/pages/CreateRole.vue'),
+          import('@modules/roles/presentation/pages/CreateRoleAdmin.vue'),
       },
       {
-        path: '/roles/edit',
+        path: '/roles/edit/:name',
         component: () =>
-          import('@modules/roles/presentation/pages/EditRole.vue'),
+          import('@modules/roles/presentation/pages/EditRoleAdmin.vue'),
+      },
+      {
+        path: '/roles/owners',
+        component: () =>
+          import('@modules/roles/presentation/pages/RolesOwnerPage.vue'),
+      },
+      {
+        path: '/roles/owners/create',
+        component: () =>
+          import('@modules/roles/presentation/pages/CreateRoleOwner.vue'),
+      },
+      {
+        path: '/roles/owners/edit/:name',
+        component: () =>
+          import('@modules/roles/presentation/pages/EditRoleOwner.vue'),
       },
     ],
     meta: {

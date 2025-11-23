@@ -4,17 +4,6 @@
   </q-page>
 </template>
 
-<script lang="ts">
+<script lang="ts" setup>
 import RoleForm from '../components/RoleForm.vue';
-
-export default {
-  components: {
-    RoleForm
-  },
-  setup() {
-    // RETURN TO COMPONENT
-    return {
-    };
-  }
-};
 </script>

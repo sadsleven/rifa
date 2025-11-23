@@ -5,10 +5,6 @@
     <q-header dense class="flex row bg-white custom-header" height-hint="96" style="height: 96px;">
       <q-toolbar class="justify-center">
         <q-toolbar-title>
-          <q-btn v-if="miniState" color="app-primary" flat round size="11px" @click="drawerClick">
-            <q-icon name="mdi-arrow-collapse-right" />
-          </q-btn>
-
           <div class="flex justify-start items-center q-pl-md">
             <q-icon name="mdi-tab" color="app-primary" size="24px" />
             <h1 class="text-black q-ml-sm fs-20 text-weight-bold lh-24 ls-1">
@@ -111,7 +107,7 @@
           <q-btn no-caps :disable="loading" class="q-mt-md q-mb-md br-6 text-semi-bold " style="width: 84px;"
             label="Cancelar" color="app-danger" v-close-popup />
           <q-btn no-caps :disable="loading" class="q-mt-md q-mb-md br-6 text-semi-bold " style="width: 132px;"
-            :loading="loading" label="Si, cerrar sesión" color="app-secondary" @click="handleLogout" />
+            :loading="loading" label="Si, cerrar sesión" color="app-primary" @click="handleLogout" />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -120,7 +116,8 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-import EssentialLink, { EssentialLinkProps } from '@common/components/EssentialLink.vue';
+import type { EssentialLinkProps } from '@common/components/EssentialLink.vue';
+import EssentialLink from '@common/components/EssentialLink.vue';
 import { LogoutUseCase, AuthMeUseCase } from '@modules/auth/domain/useCases';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '@modules/auth/domain/store';
@@ -147,24 +144,29 @@ const essentialLinks: EssentialLinkProps[] = [
     link: '/users'
   },
   {
-    title: 'Usuarios',
+    title: 'Dueños',
     icon: 'mdi-account',
-    link: '/dashboard'
+    link: '/owners'
   },
   {
-    title: 'Roles',
+    title: 'Roles admin',
     icon: 'mdi-lock',
-    link: '/users'
+    link: '/roles'
+  },
+  {
+    title: 'Roles dueños',
+    icon: 'mdi-account-lock',
+    link: '/roles/owners'
   },
   {
     title: 'Bancas',
     icon: 'mdi-bank',
-    link: '/dashboard'
+    link: '/banks'
   },
   {
     title: 'Rifas',
     icon: 'mdi-slot-machine',
-    link: '/dashboard'
+    link: '/raffles'
   }
 ];
 

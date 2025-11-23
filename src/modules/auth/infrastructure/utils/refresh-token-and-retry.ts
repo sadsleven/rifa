@@ -1,6 +1,6 @@
 import configuration from '@config/configuration';
 import authRoutes from '@modules/auth/infrastructure/routes';
-import { PiniaStore } from '@modules/auth/domain/store/types';
+import type { PiniaStore } from '@modules/auth/domain/store/types';
 import { tokenExpired } from '@common/utils/token-expired';
 export const refreshTokenAndRetry =  (store: PiniaStore) =>
 {

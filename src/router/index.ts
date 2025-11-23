@@ -42,13 +42,19 @@ export default route(function (/* { store, ssrContext } */) {
     // Check if the route requires authentication
     if (to.meta.requiresAuth) {
       if (!isAuthenticated) {
-        next({ path: '/' });
+        // Redirect to login page if not authenticated
+        if (to.path !== '/') {
+          next({ path: '/' });
+        } else {
+          next();
+        }
       } else {
         next();
       }
     } else {
-      if (isAuthenticated) {
-        next({ path: '/users' });
+      // Prevent infinite redirection loop
+      if (to.path === '/' && isAuthenticated) {
+        next({ path: '/dashboard' });
       } else {
         next();
       }

@@ -1,4 +1,5 @@
-import { ILoginSchema, LoginSchema } from '@modules/auth/presentation/schemas';
+import { LoginSchema } from '@modules/auth/presentation/schemas';
+import type { ILoginSchema } from '@modules/auth/presentation/schemas';
 import {
   axiosCatchError,
   defaultCatchError,

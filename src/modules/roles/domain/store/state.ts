@@ -1,7 +1,9 @@
-import { State } from './types';
+import type { State } from './types';
 
 const state = (): State => {
-  return {};
+  return {
+    role: null,
+  };
 };
 
 export default state;

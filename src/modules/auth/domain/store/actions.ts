@@ -1,7 +1,4 @@
-import { PiniaActions } from './types';
-import { useRouter } from 'vue-router';
-
-const router = useRouter();
+import type { PiniaActions } from './types';
 
 const actions: PiniaActions = {
   setUser(value) {
@@ -20,7 +17,6 @@ const actions: PiniaActions = {
     this.raToken = null;
     localStorage.removeItem('raUser');
     localStorage.removeItem('raToken');
-    router.push('/');
   },
 };
 

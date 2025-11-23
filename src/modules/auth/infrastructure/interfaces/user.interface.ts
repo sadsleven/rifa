@@ -1,7 +1,6 @@
-import { IBaseEntity } from '@common/interfaces';
+import type { IBaseEntity } from '@common/interfaces';
 
 export interface IUser extends IBaseEntity {
-  id: number;
   name: string;
   email: string;
   phone: string;
@@ -9,7 +8,4 @@ export interface IUser extends IBaseEntity {
   isSuperAdmin: boolean;
   permissions: [];
   roles: [];
-  createdAt: number;
-  updatedAt: null | number;
-  deletedAt: null | number;
 }

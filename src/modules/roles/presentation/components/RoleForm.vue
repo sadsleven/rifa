@@ -1,132 +1,71 @@
 <template>
   <div>
-    <q-form
-      class="self-end flex column wp-100 hp-60-vh"
-      ref="formRef"
-      greedy
-      @submit="handleUploadUser"
-    >
+    <q-form class="self-end flex column wp-100 hp-60-vh" ref="formRef" greedy @submit="handleUploadRole">
       <div class="row">
-        <div class="col-12 q-pa-md">
-          <span style="font-size: clamp(1rem, 3vw, 0.6rem)">
-          {{ 'Username (Correo electrónico)' }}
+        <div class="col-12 col-md-6 q-pa-md">
+          <span class="fs-14 text-black">
+            {{ 'Nombre' }}
           </span>
-          <q-input
-            outlined
-            color="app-primary"
-            v-model.trim="formUser.email"
-            type="email"
-            ref="emailInp"
-            placeholder="Ej. ohidalgo126@gmail.com"
-            class="mt-4"
-            :rules="[
-              validate('email')
-            ]"
-          />
+          <q-input :disable="loading || loadingRole" outlined color="app-primary" v-model.trim="formRole.name"
+            type="text" ref="nameInp" placeholder="Rol" class="mt-4" :rules="[
+              validate('name')
+            ]" />
         </div>
         <div class="col-12 col-md-6 q-pa-md">
-          <span style="font-size: clamp(1rem, 3vw, 0.6rem)">
-          {{ 'Nombre' }}
+          <span class="fs-14 text-black">
+            {{ 'Descripción' }}
           </span>
-          <q-input
-            outlined
-            color="app-primary"
-            v-model.trim="formUser.firstName"
-            type="text"
-            ref="firstNameInp"
-            placeholder="Ej. Oswaldo"
-            class="mt-4"
-            :rules="[
-              validate('firstName')
-            ]"
-          />
+          <q-input :disable="loading || loadingRole" outlined color="app-primary" v-model.trim="formRole.description"
+            type="textarea" ref="descriptionInp" placeholder="Descripción" class="mt-4" :rules="[
+              validate('description')
+            ]" />
         </div>
 
-        <div class="col-12 col-md-6 q-pa-md">
-          <span style="font-size: clamp(1rem, 3vw, 0.6rem)">
-          {{ 'Apellido' }}
+        <div class="col-12 q-pa-md">
+          <span class="fs-14 text-black">
+            {{ 'Permisos' }}
           </span>
-          <q-input
-            outlined
-            color="app-primary"
-            v-model.trim="formUser.lastName"
-            type="text"
-            ref="lastNameInp"
-            placeholder="Ej. Hidalgo"
-            class="mt-4"
-            :rules="[
-              validate('lastName')
-            ]"
-          />
-        </div>
-        <div class="col-12 col-md-6 q-pa-md">
-          <span style="font-size: clamp(1rem, 3vw, 0.6rem)">
-          {{ 'Teléfono' }}
-          </span>
-          <q-input
-            outlined
-            color="app-primary"
-            v-model.trim="formUser.phone"
-            type="tel"
-            ref="phoneInp"
-            placeholder="Ej. 412 190 5322"
-            class="mt-4"
-            :rules="[
-              validate('phone')
-            ]"
-          />
-        </div>
-        <div class="col-12 col-md-6 q-pa-md">
-          <span style="font-size: clamp(1rem, 3vw, 0.6rem)">
-          {{ 'Género' }}
-          </span>
-          <q-select
-            outlined
-            color="app-primary"
-            v-model.trim="formUser.gender"
-            type="tel"
-            emit-value
-            map-options
-            :options="[
-              { label: 'Masculino', value: 'male' },
-              { label: 'Femenino', value: 'female' },
-              { label: 'Otro', value: 'other' },
-            ]"
-            ref="genderInp"
-            placeholder="Seleccionar"
-            class="mt-4"
-            :rules="[
-              validate('gender')
-            ]"
-          />
+          <q-select :disable="loading || loadingRole || loadingPermissions" :loading="loadingPermissions" use-chips
+            style="max-width: 100%;" stack-label class="mt-4" outlined color="app-primary"
+            v-model.trim="formRole.permissions" emit-value map-options :options="permissions" multiple
+            ref="permissionsInp" placeholder="Seleccionar" :rules="[
+              validate('permissions')
+            ]">
+            <template v-slot:option="{ itemProps, opt, selected, toggleOption }">
+              <q-item v-if="!opt.cannotSelect" v-bind="itemProps">
+                <q-item-section side>
+                  <q-checkbox color="app-primary" :model-value="selected" @update:model-value="toggleOption(opt)" />
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label class="text-black">
+                    {{ opt.label }}
+                  </q-item-label>
+                </q-item-section>
+              </q-item>
+              <div v-else class="px-15 py-10  text-black bg-grey-3">
+                {{ opt.label }}
+              </div>
+            </template>
+            <template #selected-item="{ opt }">
+              <q-chip color="app-primary" class="fs-12 text-white text-medium">
+                {{ opt.label }}
+              </q-chip>
+            </template>
+          </q-select>
         </div>
       </div>
       <div class="full-width flex justify-between">
-        <q-btn
-          no-caps
-          unelevated
-          flat
-          color="app-secondary"
-          class="py-14 text-white br-8"
-          @click="$router.back()"
-          :disable="loading"
-        >
-        <span>
-          {{ 'Cancelar' }}
-        </span>
+        <q-btn :disable="loading || loadingRole || loadingPermissions" no-caps unelevated flat color="black"
+          class="py-14 text-white br-8" @click="$router.back()">
+          <span>
+            {{ 'Cancelar' }}
+          </span>
         </q-btn>
-        <q-btn
-          no-caps
-          unelevated
-          :disable="loading"
-          :loading="loading"
-          color="app-primary"
-          class="py-14 text-white br-8"
-          type="submit"
-        >
-        <span>
-          {{ `${ !isUpdate ? 'Registrar' : 'Editar'} usuario` }}
-        </span>
+        <q-btn no-caps unelevated :disable="loading || loadingRole || loadingPermissions" :loading="loading"
+          color="app-primary" class="py-14 text-white br-8" type="submit">
+          <span>
+            {{ `${!isUpdate ? 'Registrar' : 'Editar'} rol` }}
+          </span>
         </q-btn>
       </div>
 
@@ -134,95 +73,168 @@
   </div>
 </template>
 
-<script lang="ts">
+<script lang="ts" setup>
 import { reactive, ref, onMounted } from 'vue';
-import { QForm } from 'quasar';
-import { CreateUserUseCase, EditUserUseCase } from '@modules/users/domain/useCases';
+import { QForm, useQuasar } from 'quasar';
+import { CreateRoleUseCase, EditRoleUseCase, GetPermissionsUseCase, GetRoleBySlugUseCase } from '@modules/roles/domain/useCases';
 import { useRouter } from 'vue-router';
-import { useUsersStore } from '@modules/users/domain/store';
+import type { IRole } from '@modules/roles/infrastructure/interfaces/role.interface';
+import { getNotifyDefaultOptions } from 'app/src/common/helpers/notify-default-options.helper';
+import { useI18n } from 'vue-i18n';
+import { EditRolePermissionsUseCase } from '../../domain/useCases/edit-role-permissions.useCase';
 
-export default {
-  props: {
-    isUpdate: {
-      type: Boolean,
-      default: false
-    }
+// CONSTANTS
+const { t } = useI18n()
+const $q = useQuasar();
+const $router = useRouter();
+const validate = CreateRoleUseCase.validateAt;
+
+// REFS
+const formRef = ref<QForm | null>(null);
+const loading = ref<boolean>(false);
+const role = ref<IRole | null>(null);
+const permissions = ref<string[]>([]);
+const loadingPermissions = ref<boolean>(false);
+const loadingRole = ref<boolean>(false);
+
+// REACTIVE
+const formRole = reactive({
+  name: '',
+  description: '',
+  permissions: [],
+});
+
+const props = defineProps({
+  isUpdate: {
+    type: Boolean,
+    default: false,
+    required: false,
   },
-  setup(props)
-  {
-    // CONSTANTS
-    const $router = useRouter();
-    const validate = CreateUserUseCase.validateAt;
-    const usersStore = useUsersStore();
+  admin: {
+    type: Boolean,
+    default: true,
+    required: false,
+  },
+});
 
-    // REFS
-    const formRef = ref<QForm | null>(null);
-    const loading = ref<boolean>(false);
+// FUNCTIONS
+const handleUploadRole = async () => {
+  loading.value = true;
 
-    // REACTIVE
-    const formUser = reactive({
-      firstName: '',
-      lastName: '',
-      email: '',
-      phone: '',
-      gender: ''
+  await formRef.value.validate();
+
+  if (!props.isUpdate) {
+    try {
+      await CreateRoleUseCase.handle(formRole, props.admin);
+      $q.notify({
+        ...getNotifyDefaultOptions('success'),
+        message: 'Rol creado exitosamente.'
+      })
+      await $router.push(`/roles${!props.admin ? '/owners' : ''}`);
+    }
+    catch (e: any) {
+      let errorMessage = t(`APIerrors.${e?.response?.data?.errorCode}`);
+
+      if (errorMessage.includes(e?.response?.data?.errorCode)) {
+        errorMessage = e?.response?.data?.errorMessage ?? 'Ha ocurrido un error inesperado.';
+      }
+
+      $q.notify({
+        ...getNotifyDefaultOptions('error'),
+        message: errorMessage
+      })
+    }
+  }
+  else {
+    try {
+      await EditRoleUseCase.handle({ name: formRole.name, description: formRole.description }, role.value.id, props.admin);
+      await EditRolePermissionsUseCase.handle({ permissions: formRole.permissions }, role.value.id, props.admin);
+      $q.notify({
+        ...getNotifyDefaultOptions('success'),
+        message: 'Rol editado exitosamente.'
+      })
+      await $router.push(`/roles${!props.admin ? '/owners' : ''}`);
+    }
+    catch (e: any) {
+      let errorMessage = t(`APIerrors.${e?.response?.data?.errorCode}`);
+
+      if (errorMessage.includes(e?.response?.data?.errorCode)) {
+        errorMessage = e?.response?.data?.errorMessage ?? 'Ha ocurrido un error inesperado.';
+      }
+
+      $q.notify({
+        ...getNotifyDefaultOptions('error'),
+        message: errorMessage
+      })
+    }
+  }
+
+  loading.value = false;
+};
+
+const handleGetPermissions = async () => {
+  permissions.value = [];
+  loadingPermissions.value = true;
+
+  try {
+    const response: any = await GetPermissionsUseCase.handle(props.admin);
+    const permissionsRaw = response?.data?.data ?? [];
+    const options = [];
+    permissionsRaw.filter(permission => permission.target !== 'app').forEach(element => {
+      options.push({ label: element.target, value: null, cannotSelect: true });
+      element.permissions.forEach((permission) => {
+        options.push({ label: permission.description, value: permission.value });
+      });
     });
+    permissions.value = options;
+    loadingPermissions.value = false;
+  }
+  catch (e: any) {
+    let errorMessage = t(`APIerrors.${e?.response?.data?.errorCode}`);
 
+    if (errorMessage.includes(e?.response?.data?.errorCode)) {
+      errorMessage = e?.response?.data?.errorMessage ?? 'Ha ocurrido un error inesperado.';
+    }
 
-    // FUNCTIONS
-    const handleUploadUser = async() =>
-    {
-      loading.value = true;
-
-      void await formRef.value.validate();
-
-      if (!props.isUpdate)
-      {
-        try
-        {
-          await CreateUserUseCase.handle(formUser);
-          await $router.push('/users');
-        }
-        catch (e)
-        { }
-      }
-      else
-      {
-        try
-        {
-          await EditUserUseCase.handle({ ...formUser, _id: usersStore.GetUser._id });
-          await $router.push('/users');
-        }
-        catch (e)
-        { }
-      }
-
-      loading.value = false;
-    };
-
-    // LIFECYCLE HOOKS
-    onMounted(() =>
-    {
-      if (props.isUpdate)
-      {
-        formUser.firstName = usersStore.GetUser.firstName;
-        formUser.lastName = usersStore.GetUser.lastName;
-        formUser.phone = usersStore.GetUser.phone;
-        formUser.gender = usersStore.GetUser.gender;
-        formUser.email = usersStore.GetUser.email;
-      }
-    });
-
-    // RETURN TO COMPONENT
-    return {
-      handleUploadUser,
-      formUser,
-      validate,
-      formRef,
-      loading
-    };
+    $q.notify({
+      ...getNotifyDefaultOptions('error'),
+      message: errorMessage
+    })
   }
 };
-</script>
 
-authStore.setToken(result.data.data.token);
+const handleGetRole = async () => {
+  loadingRole.value = true;
+
+  try {
+    const response: any = await GetRoleBySlugUseCase.handle($router.currentRoute.value.params.name as string, props.admin);
+    role.value = response.data.data;
+    formRole.name = role.value.name;
+    formRole.description = role.value.description;
+    formRole.permissions = role.value.permissions;
+    loadingRole.value = false;
+  }
+  catch (e: any) {
+    let errorMessage = t(`APIerrors.${e?.response?.data?.errorCode}`);
+
+    if (errorMessage.includes(e?.response?.data?.errorCode)) {
+      errorMessage = e?.response?.data?.errorMessage ?? 'Ha ocurrido un error inesperado.';
+    }
+
+    $q.notify({
+      ...getNotifyDefaultOptions('error'),
+      message: errorMessage
+    })
+  }
+};
+
+// LIFECYCLE HOOKS
+onMounted(async () => {
+  if (props.isUpdate) {
+    await Promise.all([handleGetPermissions(), handleGetRole()]);
+  } else {
+    await handleGetPermissions();
+  }
+});
+
+</script>

@@ -1,6 +1,6 @@
-import { Store } from 'pinia';
-import { PiniaActionAdaptor, PiniaGetterAdaptor } from '@stores/types';
-import { IUser } from '@modules/auth/infrastructure/interfaces/user.interface';
+import type { Store } from 'pinia';
+import type { PiniaActionAdaptor, PiniaGetterAdaptor } from '@stores/types';
+import type { IUser } from '@modules/auth/infrastructure/interfaces/user.interface';
 
 export type State = {
   raToken: string | null;

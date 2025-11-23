@@ -1,5 +1,5 @@
 import { DEFAULT_OPTIONS_NOTIFY } from '@common/constants';
-import { NotifyOptionsInterface } from '../interfaces';
+import type { NotifyOptionsInterface } from '../interfaces';
 
 export function getNotifyDefaultOptions(
   type: 'success' | 'error' | 'warning'

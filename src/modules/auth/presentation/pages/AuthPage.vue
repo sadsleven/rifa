@@ -50,8 +50,8 @@ import { QForm, useQuasar } from 'quasar';
 import { LoginUseCase } from '@modules/auth/domain/useCases';
 import { useRouter } from 'vue-router';
 import { getNotifyDefaultOptions } from 'app/src/common/helpers/notify-default-options.helper';
-const { t } = useI18n()
 
+const { t } = useI18n()
 const $q = useQuasar();
 const $router = useRouter();
 
@@ -82,7 +82,7 @@ const handleLogin = async () => {
   catch (e: any) {
     let errorMessage = t(`APIerrors.${e?.response?.data?.errorCode}`);
 
-    if (errorMessage === e?.response?.data?.errorCode) {
+    if (errorMessage.includes(e?.response?.data?.errorCode)) {
       errorMessage = e?.response?.data?.errorMessage ?? 'Ha ocurrido un error inesperado.';
     }
 

@@ -1,13 +1,13 @@
-import { ILoginSchema } from '@modules/auth/presentation/schemas';
+import type { ILoginSchema } from '@modules/auth/presentation/schemas';
 import { HTTP } from '@common/services';
-import { AxiosRequestConfig } from 'axios';
+import type { AxiosRequestConfig } from 'axios';
 import authRoutes, { setBasePath } from '@modules/auth/infrastructure/routes';
 import configuration from '@config/configuration';
-import { ILoginResponse } from '@modules/auth/infrastructure/interfaces/login-response.interface';
-import { IAuthMeResponse } from '@modules/auth/infrastructure/interfaces/auth-me-response.interface';
+import type { ILoginResponse } from '@modules/auth/infrastructure/interfaces/login-response.interface';
 import { tokenExpired } from '@common/utils';
-import { PiniaStore } from '@modules/auth/domain/store/types';
+import type { PiniaStore } from '@modules/auth/domain/store/types';
 import { refreshTokenAndRetry } from '@modules/auth/infrastructure/utils';
+import type { IUser } from '../interfaces/user.interface';
 
 export class AuthGateway {
   private static readonly routes = authRoutes;
@@ -40,7 +40,7 @@ export class AuthGateway {
       ...setBasePath(this.routes.me, this.basePath),
     };
 
-    return HTTP.request<IAuthMeResponse>({
+    return HTTP.request<{ user: IUser }>({
       config: options,
       token,
       retries: 2,
