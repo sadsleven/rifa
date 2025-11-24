@@ -15,8 +15,8 @@
           <span class="fs-14 text-black">
             {{ 'DBS' }}
           </span>
-          <q-input :disable="loading || loadingBank" outlined color="app-primary" v-model.trim="formBank.dbs"
-            type="text" ref="dbsInp" placeholder="DBS" class="mt-4" :rules="[
+          <q-input :disable="loading || loadingBank || props.isUpdate" outlined color="app-primary"
+            v-model.trim="formBank.dbs" type="text" ref="dbsInp" placeholder="DBS" class="mt-4" :rules="[
               validate('dbs')
             ]" />
         </div>
@@ -63,7 +63,7 @@
         </div>
       </div>
 
-      <div class="row q-mt-md">
+      <div class="row q-mt-md" v-if="!props.isUpdate">
         <div class="col-12 q-pa-md">
           <span class="fs-16 text-bold text-black">Dueño</span>
         </div>
@@ -118,7 +118,7 @@
 <script lang="ts" setup>
 import { reactive, ref, onMounted } from 'vue';
 import { QForm, useQuasar } from 'quasar';
-import { CreateBankUseCase, EditBankUseCase } from '@modules/bank/domain/useCases';
+import { CreateBankUseCase, EditBankUseCase, GetBankBySlugUseCase } from '@modules/bank/domain/useCases';
 import { useRouter } from 'vue-router';
 import type { IBank } from '@modules/bank/infrastructure/interfaces/bank.interface';
 import { getNotifyDefaultOptions } from 'app/src/common/helpers/notify-default-options.helper';
@@ -159,8 +159,8 @@ const props = defineProps({
     default: false,
     required: false,
   },
-  bankId: {
-    type: Number,
+  bankSlug: {
+    type: String,
     required: false,
   }
 });
@@ -177,7 +177,7 @@ const handleUploadBank = async () => {
 
       $q.notify({
         ...getNotifyDefaultOptions('success'),
-        message: `Banca creada exitosamente, la contraseña del dueño es: "${response?.data?.data?.args?.pass}".`,
+        message: `Banca creada exitosamente, la contraseña del dueño es: "${response?.data?.data?.args?.ownerPassword}".`,
         timeout: 0
       })
 
@@ -197,9 +197,12 @@ const handleUploadBank = async () => {
     }
   }
   else {
-    if (!props.bankId) return;
+    if (!bank.value.id) return;
     try {
-      await EditBankUseCase.handle(formBank, props.bankId);
+      const payload = { ...formBank }
+      delete payload.owner
+      delete payload.dbs
+      await EditBankUseCase.handle(payload, bank.value.id);
       $q.notify({
         ...getNotifyDefaultOptions('success'),
         message: 'Banca editado exitosamente.'
@@ -223,10 +226,47 @@ const handleUploadBank = async () => {
   loading.value = false;
 };
 
+const handleGetBank = async () => {
+  if (!props.bankSlug) return;
+  loadingBank.value = true;
+
+  try {
+    const response = await GetBankBySlugUseCase.handle(props.bankSlug);
+    if (response && response.data) {
+      bank.value = response.data.data;
+      formBank.name = bank.value.name;
+      formBank.dbs = bank.value.dbs;
+      formBank.urlEndpoint = bank.value.urlEndpoint;
+      formBank.secretJwt = bank.value.secretJwt;
+      formBank.hashBank = bank.value.hashBank;
+      formBank.urlBg = bank.value.urlBg || '';
+      formBank.urlLogo = bank.value.urlLogo || '';
+      if (bank.value.owner) {
+        formBank.owner.name = bank.value.owner.name;
+        formBank.owner.email = bank.value.owner.email;
+        formBank.owner.phone = bank.value.owner.phone;
+      }
+    }
+  }
+  catch (e: any) {
+    let errorMessage = t(`APIerrors.${e?.response?.data?.errorCode}`);
+
+    if (errorMessage.includes(e?.response?.data?.errorCode)) {
+      errorMessage = e?.response?.data?.errorMessage ?? 'Ha ocurrido un error inesperado.';
+    }
+
+    $q.notify({
+      ...getNotifyDefaultOptions('error'),
+      message: errorMessage
+    })
+  }
+  loadingBank.value = false;
+};
+
 // LIFECYCLE HOOKS
 onMounted(async () => {
   if (props.isUpdate) {
-    // await handleGetBank();
+    await handleGetBank();
   }
 });
 

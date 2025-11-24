@@ -76,7 +76,7 @@ const routes: RouteRecordRaw[] = [
           import('@modules/bank/presentation/pages/CreateBankPage.vue'),
       },
       {
-        path: '/banks/edit/:id',
+        path: '/banks/edit/:slug',
         component: () =>
           import('@modules/bank/presentation/pages/EditBankPage.vue'),
       },

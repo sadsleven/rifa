@@ -182,7 +182,7 @@ function onRequest(paginationProps) {
 }
 
 const editBank = async (bankRow) => {
-    await $router.push({ path: `/banks/edit/${bankRow.id}` });
+    await $router.push({ path: `/banks/edit/${bankRow.name}` });
 };
 
 const deleteBank = (bankRow) => {

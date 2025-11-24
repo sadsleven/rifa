@@ -5,8 +5,8 @@ const bankRoutes = {
     url: 'admin/banks',
     method: 'GET',
   },
-  getBankById: {
-    url: (id: number) => `admin/banks/${id}`,
+  getBankBySlug: {
+    url: (slug: string) => `admin/banks/${slug}`,
     method: 'GET',
   },
   createBank: {

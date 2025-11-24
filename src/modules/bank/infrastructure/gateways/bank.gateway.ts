@@ -15,17 +15,9 @@ export class BankGateway {
   private static readonly routes = bankRoutes;
   private static readonly basePath = configuration().server.basePath;
 
-  static async getBanks(
-    token: string,
-    store: PiniaStore,
-    query: string = ''
-  ) {
+  static async getBanks(token: string, store: PiniaStore, query: string = '') {
     const options: AxiosRequestConfig = {
-      ...setBasePath(
-        this.routes.getBanks,
-        this.basePath,
-        query
-      ),
+      ...setBasePath(this.routes.getBanks, this.basePath, query),
     };
 
     return HTTP.request<{ data: IBank[] }>({
@@ -37,16 +29,29 @@ export class BankGateway {
     });
   }
 
-  static async createBank(
-    data: IBankSchema,
-    token: string,
-    store: PiniaStore
-  ) {
+  static async getBankBySlug(slug: string, token: string, store: PiniaStore) {
     const options: AxiosRequestConfig = {
       ...setBasePath(
-        this.routes.createBank,
+        {
+          url: this.routes.getBankBySlug.url(slug),
+          method: this.routes.getBankBySlug.method,
+        },
         this.basePath
       ),
+    };
+
+    return HTTP.request<{ data: IBank }>({
+      config: options,
+      token,
+      retries: 2,
+      onCatchError: refreshTokenAndRetry(store),
+      retryCondition: tokenExpired,
+    });
+  }
+
+  static async createBank(data: IBankSchema, token: string, store: PiniaStore) {
+    const options: AxiosRequestConfig = {
+      ...setBasePath(this.routes.createBank, this.basePath),
       data,
     };
 
@@ -85,11 +90,7 @@ export class BankGateway {
     });
   }
 
-  static async deleteBank(
-    id: number,
-    token: string,
-    store: PiniaStore
-  ) {
+  static async deleteBank(id: number, token: string, store: PiniaStore) {
     const options: AxiosRequestConfig = {
       ...setBasePath(
         {
@@ -109,11 +110,7 @@ export class BankGateway {
     });
   }
 
-  static async enableBank(
-    id: number,
-    token: string,
-    store: PiniaStore
-  ) {
+  static async enableBank(id: number, token: string, store: PiniaStore) {
     const options: AxiosRequestConfig = {
       ...setBasePath(
         {
@@ -133,11 +130,7 @@ export class BankGateway {
     });
   }
 
-  static async disableBank(
-    id: number,
-    token: string,
-    store: PiniaStore
-  ) {
+  static async disableBank(id: number, token: string, store: PiniaStore) {
     const options: AxiosRequestConfig = {
       ...setBasePath(
         {
