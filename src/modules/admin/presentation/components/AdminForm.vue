@@ -8,7 +8,7 @@
           </span>
           <q-input :disable="loading || loadingAdmin" outlined color="app-primary" v-model.trim="formAdmin.name"
             type="text" ref="nameInp" placeholder="Nombre" class="mt-4" :rules="[
-              val => !!val || 'El nombre es requerido'
+              validate('name')
             ]" />
         </div>
         <div class="col-12 col-md-6 q-pa-md">
@@ -17,8 +17,7 @@
           </span>
           <q-input :disable="loading || loadingAdmin" outlined color="app-primary" v-model.trim="formAdmin.email"
             type="email" ref="emailInp" placeholder="Email" class="mt-4" :rules="[
-              val => !!val || 'El email es requerido',
-              val => /.+@.+\..+/.test(val) || 'Email inválido'
+              validate('email')
             ]" />
         </div>
         <div class="col-12 col-md-6 q-pa-md">
@@ -27,7 +26,7 @@
           </span>
           <q-input :disable="loading || loadingAdmin" outlined color="app-primary" v-model.trim="formAdmin.phone"
             type="tel" ref="phoneInp" placeholder="Teléfono" class="mt-4" :rules="[
-              val => !!val || 'El teléfono es requerido'
+              validate('phone')
             ]" />
         </div>
         <div class="col-12 col-md-6 q-pa-md">
@@ -90,6 +89,7 @@ import { useI18n } from 'vue-i18n';
 const { t } = useI18n()
 const $q = useQuasar();
 const $router = useRouter();
+const validate = CreateAdminUseCase.validateAt;
 
 // REFS
 const formRef = ref<QForm | null>(null);
@@ -134,7 +134,8 @@ const handleUploadAdmin = async () => {
 
       $q.notify({
         ...getNotifyDefaultOptions('success'),
-        message: 'Admin creado exitosamente.'
+        message: `Admin creado exitosamente, la contraseña es: "${response?.data?.data?.args?.pass}".`,
+        timeout: 0
       })
       await $router.push('/admins');
     }

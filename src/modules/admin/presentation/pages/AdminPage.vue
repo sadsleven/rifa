@@ -19,8 +19,8 @@
             <!-- ACTIONS COLUMN -->
             <template v-slot:body-cell-enabled="props">
                 <q-td :props="props">
-                    <q-toggle v-model="props.row.enabled" color="app-primary"
-                        @update:model-value="handleEnableOrDisable(props.row)" />
+                    <q-toggle :disable="authStore.GetUser.id === props.row.id" v-model="props.row.enabled"
+                        color="app-primary" @update:model-value="handleEnableOrDisable(props.row)" />
                 </q-td>
             </template>
 
@@ -44,7 +44,8 @@
         <q-dialog v-model="confirmDelete" persistent>
             <q-card style="max-width: 450px; width: 100%;">
                 <q-card-section class="row items-center justify-center">
-                    <div class="fs-20 text-inter-bold lh-24 text-center text-black q-mt-md">¿Estas seguro de eliminar el
+                    <div class="fs-20 text-semi-bold lh-24 text-center text-black q-mt-md">¿Estas seguro de
+                        eliminar el
                         admin: {{
                             `${admin?.name}`
                         }}?</div>

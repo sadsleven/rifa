@@ -1,6 +1,6 @@
 <template>
   <div>
-    <q-form class="self-end flex column wp-100 hp-60-vh" ref="formRef" greedy @submit="handleUploadBank">
+    <q-form class="self-end wp-100 hp-60-vh" ref="formRef" greedy @submit="handleUploadBank">
       <div class="row">
         <div class="col-12 col-md-6 q-pa-md">
           <span class="fs-14 text-black">
@@ -8,7 +8,7 @@
           </span>
           <q-input :disable="loading || loadingBank" outlined color="app-primary" v-model.trim="formBank.name"
             type="text" ref="nameInp" placeholder="Nombre" class="mt-4" :rules="[
-              val => !!val || 'El nombre es requerido'
+              validate('name')
             ]" />
         </div>
         <div class="col-12 col-md-6 q-pa-md">
@@ -17,7 +17,7 @@
           </span>
           <q-input :disable="loading || loadingBank" outlined color="app-primary" v-model.trim="formBank.dbs"
             type="text" ref="dbsInp" placeholder="DBS" class="mt-4" :rules="[
-              val => !!val || 'El DBS es requerido'
+              validate('dbs')
             ]" />
         </div>
         <div class="col-12 col-md-6 q-pa-md">
@@ -26,7 +26,7 @@
           </span>
           <q-input :disable="loading || loadingBank" outlined color="app-primary" v-model.trim="formBank.urlEndpoint"
             type="text" ref="urlEndpointInp" placeholder="URL Endpoint" class="mt-4" :rules="[
-              val => !!val || 'El URL Endpoint es requerido'
+              validate('urlEndpoint')
             ]" />
         </div>
         <div class="col-12 col-md-6 q-pa-md">
@@ -35,7 +35,7 @@
           </span>
           <q-input :disable="loading || loadingBank" outlined color="app-primary" v-model.trim="formBank.secretJwt"
             type="text" ref="secretJwtInp" placeholder="Secret JWT" class="mt-4" :rules="[
-              val => !!val || 'El Secret JWT es requerido'
+              validate('secretJwt')
             ]" />
         </div>
         <div class="col-12 col-md-6 q-pa-md">
@@ -44,7 +44,7 @@
           </span>
           <q-input :disable="loading || loadingBank" outlined color="app-primary" v-model.trim="formBank.hashBank"
             type="text" ref="hashBankInp" placeholder="Hash Bank" class="mt-4" :rules="[
-              val => !!val || 'El Hash Bank es requerido'
+              validate('hashBank')
             ]" />
         </div>
         <div class="col-12 col-md-6 q-pa-md">
@@ -73,7 +73,7 @@
           </span>
           <q-input :disable="loading || loadingBank" outlined color="app-primary" v-model.trim="formBank.owner.name"
             type="text" ref="ownerNameInp" placeholder="Nombre del Dueño" class="mt-4" :rules="[
-              val => !!val || 'El nombre del dueño es requerido'
+              validateOwner('name')
             ]" />
         </div>
         <div class="col-12 col-md-4 q-pa-md">
@@ -82,8 +82,7 @@
           </span>
           <q-input :disable="loading || loadingBank" outlined color="app-primary" v-model.trim="formBank.owner.email"
             type="email" ref="ownerEmailInp" placeholder="Email del Dueño" class="mt-4" :rules="[
-              val => !!val || 'El email del dueño es requerido',
-              val => /.+@.+\..+/.test(val) || 'Email inválido'
+              validateOwner('email')
             ]" />
         </div>
         <div class="col-12 col-md-4 q-pa-md">
@@ -92,7 +91,7 @@
           </span>
           <q-input :disable="loading || loadingBank" outlined color="app-primary" v-model.trim="formBank.owner.phone"
             type="tel" ref="ownerPhoneInp" placeholder="Teléfono del Dueño" class="mt-4" :rules="[
-              val => !!val || 'El teléfono del dueño es requerido'
+              validateOwner('phone')
             ]" />
         </div>
       </div>
@@ -129,6 +128,8 @@ import { useI18n } from 'vue-i18n';
 const { t } = useI18n()
 const $q = useQuasar();
 const $router = useRouter();
+const validate = CreateBankUseCase.validateAt;
+const validateOwner = CreateBankUseCase.validateOwnerAt;
 
 // REFS
 const formRef = ref<QForm | null>(null);
@@ -172,11 +173,14 @@ const handleUploadBank = async () => {
 
   if (!props.isUpdate) {
     try {
-      await CreateBankUseCase.handle(formBank);
+      const response: any = await CreateBankUseCase.handle(formBank);
+
       $q.notify({
         ...getNotifyDefaultOptions('success'),
-        message: 'Banca creado exitosamente.'
+        message: `Banca creada exitosamente, la contraseña del dueño es: "${response?.data?.data?.args?.pass}".`,
+        timeout: 0
       })
+
       await $router.push('/banks');
     }
     catch (e: any) {

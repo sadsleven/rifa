@@ -8,7 +8,7 @@
           </span>
           <q-input :disable="loading || loadingRaffle" outlined color="app-primary" v-model.trim="formRaffle.title"
             type="text" ref="titleInp" placeholder="Título" class="mt-4" :rules="[
-              val => !!val || 'El título es requerido'
+              validate('title')
             ]" />
         </div>
         <div class="col-12 col-md-6 q-pa-md">
@@ -18,7 +18,7 @@
           <q-input :disable="loading || loadingRaffle" outlined color="app-primary"
             v-model.trim="formRaffle.description" type="text" ref="descriptionInp" placeholder="Descripción"
             class="mt-4" :rules="[
-              val => !!val || 'La descripción es requerida'
+              validate('description')
             ]" />
         </div>
         <div class="col-12 col-md-6 q-pa-md">
@@ -27,7 +27,7 @@
           </span>
           <q-input :disable="loading || loadingRaffle" outlined color="app-primary" v-model.trim="formRaffle.mainImgUrl"
             type="text" ref="mainImgUrlInp" placeholder="URL Imagen Principal" class="mt-4" :rules="[
-              val => !!val || 'La URL de la imagen principal es requerida',
+              validate('mainImgUrl')
             ]" />
         </div>
         <div class="col-12 col-md-6 q-pa-md">
@@ -46,7 +46,7 @@
           </span>
           <q-input :disable="loading || loadingRaffle" outlined color="app-primary" v-model="formRaffle.startDate"
             type="datetime-local" ref="startDateInp" class="mt-4" :rules="[
-              val => !!val || 'La fecha de inicio es requerida'
+              validate('startDate')
             ]" />
         </div>
         <div class="col-12 col-md-6 q-pa-md">
@@ -55,7 +55,7 @@
           </span>
           <q-input :disable="loading || loadingRaffle" outlined color="app-primary" v-model="formRaffle.endDate"
             type="datetime-local" ref="endDateInp" class="mt-4" :rules="[
-              val => !!val || 'La fecha de fin es requerida'
+              validate('endDate')
             ]" />
         </div>
         <div class="col-12 col-md-6 q-pa-md">
@@ -65,7 +65,7 @@
           <q-input :disable="loading || loadingRaffle" outlined color="app-primary"
             v-model.number="formRaffle.ticketDigits" type="number" ref="ticketDigitsInp" placeholder="Ej: 3"
             class="mt-4" :rules="[
-              val => !!val || 'Los dígitos del ticket son requeridos'
+              validate('ticketDigits')
             ]" />
         </div>
         <div class="col-12 col-md-6 q-pa-md">
@@ -75,7 +75,7 @@
           <q-input :disable="loading || loadingRaffle" outlined color="app-primary"
             v-model.number="formRaffle.ticketPrice" type="number" step="0.01" ref="ticketPriceInp" placeholder="Precio"
             class="mt-4" :rules="[
-              val => !!val || 'El precio del ticket es requerido'
+              validate('ticketPrice')
             ]" />
         </div>
         <div class="col-12 col-md-6 q-pa-md">
@@ -84,7 +84,7 @@
           </span>
           <q-input :disable="loading || loadingRaffle" outlined color="app-primary" v-model.trim="formRaffle.currency"
             type="text" ref="currencyInp" placeholder="Ej: VES" class="mt-4" :rules="[
-              val => !!val || 'La moneda es requerida'
+              validate('currency')
             ]" />
         </div>
         <div class="col-12 col-md-6 q-pa-md">
@@ -112,19 +112,23 @@
               <div class="col-12 col-md-6 q-pa-xs">
                 <q-select dense outlined v-model="place.rewardsYes"
                   :options="['exactNumber', 'upperApproximation', 'lowerApproximation', 'terminal']"
-                  label="Tipo de Premio" />
+                  label="Tipo de Premio" :rules="[validatePlace('rewardsYes')]" />
               </div>
               <div class="col-12 col-md-6 q-pa-xs">
-                <q-select dense outlined v-model="place.type" :options="['physical', 'money']" label="Tipo" />
+                <q-select dense outlined v-model="place.type" :options="['physical', 'money']" label="Tipo"
+                  :rules="[validatePlace('type')]" />
               </div>
               <div class="col-12 col-md-6 q-pa-xs">
-                <q-input dense outlined v-model.number="place.amount" type="number" label="Cantidad" />
+                <q-input dense outlined v-model.number="place.amount" type="number" label="Cantidad"
+                  :rules="[validatePlace('amount')]" />
               </div>
               <div class="col-12 col-md-6 q-pa-xs">
-                <q-input dense outlined v-model="place.lotteryAt" type="datetime-local" label="Fecha Sorteo" />
+                <q-input dense outlined v-model="place.lotteryAt" type="datetime-local" label="Fecha Sorteo"
+                  :rules="[validatePlace('lotteryAt')]" />
               </div>
               <div class="col-12 col-md-12 q-pa-xs">
-                <q-input dense outlined v-model="place.description" label="Descripción" />
+                <q-input dense outlined v-model="place.description" label="Descripción"
+                  :rules="[validatePlace('description')]" />
               </div>
             </div>
 
@@ -164,9 +168,10 @@
           <div class="row">
             <div v-for="(qp, index) in formRaffle.quickPurchases" :key="index" class="col-12 col-md-4 q-pa-sm">
               <div class="row items-center q-gutter-x-sm bg-grey-2 q-pa-sm br-8">
-                <q-input dense outlined v-model.number="qp.minTickets" type="number" label="Min Tickets" class="col" />
-                <q-input dense outlined v-model.number="qp.discountPercentage" type="number" label="% Desc"
-                  class="col" />
+                <q-input dense outlined v-model.number="qp.minTickets" type="number" label="Min Tickets" class="col"
+                  :rules="[validateQP('minTickets')]" />
+                <q-input dense outlined v-model.number="qp.discountPercentage" type="number" label="% Desc" class="col"
+                  :rules="[validateQP('discountPercentage')]" />
                 <q-btn round dense flat color="negative" icon="delete" @click="removeQuickPurchase(index)" />
               </div>
             </div>
@@ -211,6 +216,9 @@ const $q = useQuasar();
 const $router = useRouter();
 const $route = useRoute();
 const dbs = $route.params.dbs as string;
+const validate = CreateRaffleUseCase.validateAt;
+const validatePlace = CreateRaffleUseCase.validatePlaceAt;
+const validateQP = CreateRaffleUseCase.validateQuickPurchaseAt;
 
 // REFS
 const formRef = ref<QForm | null>(null);
