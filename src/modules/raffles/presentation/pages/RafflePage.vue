@@ -1,8 +1,8 @@
 <template>
-    <div class="full-width column">
+    <q-page class="q-pa-lg">
         <div class="row items-center q-mb-md">
-            <q-btn flat round icon="arrow_back" @click="$router.push('/banks')" />
-            <span class="fs-20 text-bold q-ml-sm">Rifas del Banco: {{ dbs }}</span>
+            <q-btn flat round icon="arrow_back" color="app-primary" @click="$router.push('/banks')" />
+            <span class="fs-20 text-bold text-black q-ml-sm">Rifas del Banco: {{ dbs }}</span>
         </div>
         <q-table binary-state-sort @request="onRequest" v-model:pagination="pagination" loading-label="Cargando"
             :rows="raffles" :columns="columns" flat :loading="loading || loadingPagination" row-key="id"
@@ -14,7 +14,8 @@
                 <q-btn unelevated :class="{
                     'fs-14 q-mb-md': $q.screen.width < 1065 && $q.screen.width > 800,
                     'full-width': $q.screen.width < 1065,
-                }" class="text-medium br-6" no-caps @click="$router.push(`/banks/${dbs}/raffles/create`)" color="app-primary">
+                }" class="text-medium br-6" no-caps @click="$router.push(`/banks/${dbs}/raffles/create`)"
+                    color="app-primary">
                     <q-icon name="add" size="18px" class="q-pr-sm" />
                     Crear rifa
                 </q-btn>
@@ -59,7 +60,7 @@
                 </q-card-actions>
             </q-card>
         </q-dialog>
-    </div>
+    </q-page>
 </template>
 
 <script lang="ts" setup>

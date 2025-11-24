@@ -1,5 +1,5 @@
 <template>
-    <div class="full-width column">
+    <q-page class="q-pa-lg ">
         <q-table binary-state-sort @request="onRequest" v-model:pagination="pagination" loading-label="Cargando"
             :rows="admins" :columns="columns" flat :loading="loading || loadingPagination" row-key="id"
             style="width: 100%;" :rows-per-page-options="[10, 15, 20, 30]"
@@ -55,7 +55,7 @@
                 </q-card-actions>
             </q-card>
         </q-dialog>
-    </div>
+    </q-page>
 </template>
 
 <script lang="ts" setup>

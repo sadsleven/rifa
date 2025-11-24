@@ -110,31 +110,38 @@
             </div>
             <div class="row">
               <div class="col-12 col-md-6 q-pa-xs">
-                <q-select dense outlined v-model="place.rewardsYes"
-                  :options="['exactNumber', 'upperApproximation', 'lowerApproximation', 'terminal']"
-                  label="Tipo de Premio" />
+                <q-select dense outlined v-model="place.rewardsYes" :options="['exactNumber', 'upperApproximation', 'lowerApproximation', 'terminal']" label="Tipo de Premio" />
               </div>
               <div class="col-12 col-md-6 q-pa-xs">
+                <q-select dense outlined v-model="place.type" :options="['physical', 'money']" label="Tipo" />
+              </div>
+              <div class="col-12 col-md-6 q-pa-xs">
+                <q-input dense outlined v-model.number="place.amount" type="number" label="Cantidad" />
+              </div>
+              <div class="col-12 col-md-6 q-pa-xs">
+                <q-input dense outlined v-model="place.lotteryAt" type="datetime-local" label="Fecha Sorteo" />
+              </div>
+              <div class="col-12 col-md-12 q-pa-xs">
                 <q-input dense outlined v-model="place.description" label="Descripción" />
               </div>
             </div>
-            <!-- Rewards inside Place -->
+            
+            <!-- ImgUrls inside Place -->
             <div class="q-pl-md q-mt-sm">
-              <div class="row items-center justify-between">
-                <span class="text-caption text-bold">Recompensas</span>
-                <q-btn round dense flat size="sm" color="primary" icon="add" @click="addReward(index)" />
+               <div class="row items-center justify-between">
+                <span class="text-caption text-bold">Imágenes del Premio (Min 1)</span>
+                <q-btn round dense flat size="sm" color="primary" icon="add" @click="addPlaceImgUrl(index)" />
               </div>
-              <div v-for="(reward, rIndex) in place.rewards" :key="rIndex" class="row q-mb-xs">
-                <div class="col-5 q-pa-xs">
-                  <q-input dense outlined v-model="reward.name" label="Nombre" />
-                </div>
-                <div class="col-6 q-pa-xs">
-                  <q-input dense outlined v-model="reward.description" label="Desc" />
-                </div>
-                <div class="col-1 q-pa-xs flex flex-center">
-                  <q-btn round dense flat size="sm" color="negative" icon="delete"
-                    @click="removeReward(index, rIndex)" />
-                </div>
+              <div v-for="(url, uIndex) in place.imgUrls" :key="uIndex" class="row q-mb-xs items-center">
+                 <div class="col-11 q-pa-xs">
+                    <q-input dense outlined v-model="place.imgUrls[uIndex]" label="URL Imagen" />
+                 </div>
+                 <div class="col-1 q-pa-xs flex flex-center">
+                    <q-btn round dense flat size="sm" color="negative" icon="delete" @click="removePlaceImgUrl(index, uIndex)" />
+                 </div>
+              </div>
+              <div v-if="place.imgUrls.length === 0" class="text-negative text-caption">
+                Debe agregar al menos una imagen para el premio.
               </div>
             </div>
           </div>
@@ -241,9 +248,11 @@ const addPlace = () => {
   formRaffle.places.push({
     place: formRaffle.places.length + 1,
     rewardsYes: 'exactNumber',
+    type: 'physical',
+    amount: 1,
+    lotteryAt: '',
     description: '',
-    rewards: [],
-    imgUrls: []
+    imgUrls: [''] // Initialize with one empty string to show input
   });
 };
 
@@ -253,16 +262,12 @@ const removePlace = (index: number) => {
   formRaffle.places.forEach((p, i) => p.place = i + 1);
 };
 
-const addReward = (placeIndex: number) => {
-  formRaffle.places[placeIndex].rewards.push({
-    name: '',
-    description: '',
-    imgUrls: []
-  });
+const addPlaceImgUrl = (placeIndex: number) => {
+  formRaffle.places[placeIndex].imgUrls.push('');
 };
 
-const removeReward = (placeIndex: number, rewardIndex: number) => {
-  formRaffle.places[placeIndex].rewards.splice(rewardIndex, 1);
+const removePlaceImgUrl = (placeIndex: number, imgIndex: number) => {
+  formRaffle.places[placeIndex].imgUrls.splice(imgIndex, 1);
 };
 
 const addQuickPurchase = () => {
@@ -291,10 +296,24 @@ const handleUploadRaffle = async () => {
     $q.notify({ ...getNotifyDefaultOptions('error'), message: 'Debe agregar al menos un lugar.' });
     return;
   }
+  // Validate each place has at least one image
+  for (let i = 0; i < formRaffle.places.length; i++) {
+    if (formRaffle.places[i].imgUrls.length === 0) {
+      $q.notify({ ...getNotifyDefaultOptions('error'), message: `El lugar #${i + 1} debe tener al menos una imagen.` });
+      return;
+    }
+  }
+
   if (formRaffle.quickPurchases.length < 6) {
     $q.notify({ ...getNotifyDefaultOptions('error'), message: 'Debe agregar al menos 6 opciones de compra rápida.' });
     return;
   }
+
+  // Clean up empty strings from imgUrls
+  formRaffle.imgUrls = formRaffle.imgUrls.filter(url => url.trim() !== '');
+  formRaffle.places.forEach(place => {
+    place.imgUrls = place.imgUrls.filter((url: string) => url.trim() !== '');
+  });
 
   loading.value = true;
 

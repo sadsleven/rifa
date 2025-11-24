@@ -1,5 +1,5 @@
 <template>
-    <div class="full-width column">
+    <q-page class="q-pa-lg">
         <q-table binary-state-sort @request="onRequest" v-model:pagination="pagination" loading-label="Cargando"
             :rows="banks" :columns="columns" flat :loading="loading || loadingPagination" row-key="id"
             style="width: 100%;" :rows-per-page-options="[10, 15, 20, 30]"
@@ -19,10 +19,12 @@
             <!-- ACTIONS COLUMN -->
             <template v-slot:body-cell-actions="props">
                 <q-td :props="props">
-                    <q-btn unelevated dense flat round color="app-primary" icon="group" @click="$router.push(`/banks/${props.row.dbs}/users`)" >
+                    <q-btn unelevated dense flat round color="app-primary" icon="group"
+                        @click="$router.push(`/banks/${props.row.dbs}/users`)">
                         <q-tooltip>Usuarios</q-tooltip>
                     </q-btn>
-                    <q-btn unelevated dense flat round color="app-primary" icon="confirmation_number" @click="$router.push(`/banks/${props.row.dbs}/raffles`)" >
+                    <q-btn unelevated dense flat round color="app-primary" icon="confirmation_number"
+                        @click="$router.push(`/banks/${props.row.dbs}/raffles`)">
                         <q-tooltip>Rifas</q-tooltip>
                     </q-btn>
                     <q-btn unelevated dense flat round color="app-primary" icon="edit" @click="editBank(props.row)" />
@@ -61,7 +63,7 @@
                 </q-card-actions>
             </q-card>
         </q-dialog>
-    </div>
+    </q-page>
 </template>
 
 <script lang="ts" setup>
