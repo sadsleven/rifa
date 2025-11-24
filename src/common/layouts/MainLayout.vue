@@ -141,13 +141,15 @@ const essentialLinks: EssentialLinkProps[] = [
   {
     title: 'Admins',
     icon: 'mdi-shield-account',
-    link: '/users'
+    link: '/admins'
   },
+  /*
   {
     title: 'Dueños',
     icon: 'mdi-account',
     link: '/owners'
   },
+  */
   {
     title: 'Roles admin',
     icon: 'mdi-lock',
