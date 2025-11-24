@@ -12,11 +12,18 @@
                     'full-width': $q.screen.width < 1065,
                 }" class="text-medium br-6" no-caps @click="$router.push('/banks/create')" color="app-primary">
                     <q-icon name="add" size="18px" class="q-pr-sm" />
-                    Crear banco
+                    Crear banca
                 </q-btn>
             </template>
 
             <!-- ACTIONS COLUMN -->
+            <template v-slot:body-cell-enabled="props">
+                <q-td :props="props">
+                    <q-toggle v-model="props.row.enabled" color="app-primary"
+                        @update:model-value="handleEnableOrDisable(props.row)" />
+                </q-td>
+            </template>
+
             <template v-slot:body-cell-actions="props">
                 <q-td :props="props">
                     <q-btn unelevated dense flat round color="app-primary" icon="group"
@@ -45,7 +52,7 @@
             <q-card style="max-width: 450px; width: 100%;">
                 <q-card-section class="row items-center justify-center">
                     <div class="fs-20 text-inter-bold lh-24 text-center text-black q-mt-md">¿Estas seguro de eliminar el
-                        banco: {{
+                        banca: {{
                             `${bank?.name}`
                         }}?</div>
                 </q-card-section>
@@ -68,7 +75,7 @@
 
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue';
-import { GetBanksUseCase, DeleteBankUseCase } from '@modules/bank/domain/useCases';
+import { GetBanksUseCase, DeleteBankUseCase, EnableOrDisableBankUseCase } from '@modules/bank/domain/useCases';
 import { useRouter } from 'vue-router';
 import type { IBank } from '@modules/bank/infrastructure/interfaces/bank.interface';
 import dayjs from 'dayjs';
@@ -93,6 +100,7 @@ const columns: any = [
             : '-'
             }`
     },
+    { name: 'enabled', align: 'left', label: 'Activo', field: 'enabled', sortable: false },
     { name: 'actions', align: 'left', label: 'Acciones' }
 ];
 
@@ -190,7 +198,7 @@ const handleDeleteBank = async () => {
         confirmDelete.value = false;
         $q.notify({
             ...getNotifyDefaultOptions('success'),
-            message: 'Banco eliminado exitosamente.'
+            message: 'Banca eliminado exitosamente.'
         })
     }
     catch (e: any) {
@@ -207,6 +215,28 @@ const handleDeleteBank = async () => {
     }
 
     loadingDelete.value = false;
+};
+
+const handleEnableOrDisable = async (row) => {
+    try {
+        await EnableOrDisableBankUseCase.handle(row.id, row.enabled);
+        $q.notify({
+            ...getNotifyDefaultOptions('success'),
+            message: `Banca ${row.enabled ? 'activado' : 'desactivado'} exitosamente.`
+        })
+    } catch (e: any) {
+        row.enabled = !row.enabled;
+        let errorMessage = t(`APIerrors.${e?.response?.data?.errorCode}`);
+
+        if (errorMessage.includes(e?.response?.data?.errorCode)) {
+            errorMessage = e?.response?.data?.errorMessage ?? 'Ha ocurrido un error inesperado.';
+        }
+
+        $q.notify({
+            ...getNotifyDefaultOptions('error'),
+            message: errorMessage
+        })
+    }
 };
 
 // LIFECYCLE HOOKS

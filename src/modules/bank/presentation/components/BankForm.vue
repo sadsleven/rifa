@@ -107,7 +107,7 @@
         <q-btn no-caps unelevated :disable="loading || loadingBank" :loading="loading" color="app-primary"
           class="py-14 text-white br-8" type="submit">
           <span>
-            {{ `${!isUpdate ? 'Registrar' : 'Editar'} banco` }}
+            {{ `${!isUpdate ? 'Registrar' : 'Editar'} banca` }}
           </span>
         </q-btn>
       </div>
@@ -175,7 +175,7 @@ const handleUploadBank = async () => {
       await CreateBankUseCase.handle(formBank);
       $q.notify({
         ...getNotifyDefaultOptions('success'),
-        message: 'Banco creado exitosamente.'
+        message: 'Banca creado exitosamente.'
       })
       await $router.push('/banks');
     }
@@ -198,7 +198,7 @@ const handleUploadBank = async () => {
       await EditBankUseCase.handle(formBank, props.bankId);
       $q.notify({
         ...getNotifyDefaultOptions('success'),
-        message: 'Banco editado exitosamente.'
+        message: 'Banca editado exitosamente.'
       })
       await $router.push('/banks');
     }

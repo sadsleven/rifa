@@ -5,5 +5,7 @@ export default {
   APIerrors: {
     BAD_CREDENTIALS:
       'Credenciales incorrectas. Comprueba tu email y contraseña.',
+    DISABLED_ACCOUNT:
+      'Tu cuenta ha sido desactivada. Ponte en contacto con el servicio de asistencia para obtener ayuda.',
   },
 };

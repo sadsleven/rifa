@@ -25,6 +25,14 @@ const adminRoutes = {
     url: (id: number) => `admin/admins/${id}/roles`,
     method: 'PATCH',
   },
+  enableAdmin: {
+    url: (id: number) => `admin/admins/${id}/enabled`,
+    method: 'PATCH',
+  },
+  disableAdmin: {
+    url: (id: number) => `admin/admins/${id}/disabled`,
+    method: 'PATCH',
+  },
 };
 
 export type Route = Pick<AxiosRequestConfig, 'url' | 'method'>;

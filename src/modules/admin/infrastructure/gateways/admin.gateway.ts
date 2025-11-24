@@ -158,4 +158,52 @@ export class AdminGateway {
       retryCondition: tokenExpired,
     });
   }
+
+  static async enableAdmin(
+    id: number,
+    token: string,
+    store: PiniaStore
+  ) {
+    const options: AxiosRequestConfig = {
+      ...setBasePath(
+        {
+          url: this.routes.enableAdmin.url(id),
+          method: this.routes.enableAdmin.method,
+        },
+        this.basePath
+      ),
+    };
+
+    return HTTP.request<{ data: { message: string; messageCode: string } }>({
+      config: options,
+      token,
+      retries: 2,
+      onCatchError: refreshTokenAndRetry(store),
+      retryCondition: tokenExpired,
+    });
+  }
+
+  static async disableAdmin(
+    id: number,
+    token: string,
+    store: PiniaStore
+  ) {
+    const options: AxiosRequestConfig = {
+      ...setBasePath(
+        {
+          url: this.routes.disableAdmin.url(id),
+          method: this.routes.disableAdmin.method,
+        },
+        this.basePath
+      ),
+    };
+
+    return HTTP.request<{ data: { message: string; messageCode: string } }>({
+      config: options,
+      token,
+      retries: 2,
+      onCatchError: refreshTokenAndRetry(store),
+      retryCondition: tokenExpired,
+    });
+  }
 }

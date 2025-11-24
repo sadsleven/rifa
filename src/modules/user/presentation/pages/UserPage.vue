@@ -1,8 +1,8 @@
 <template>
     <div class="full-width column q-pa-lg">
         <div class="row items-center q-mb-md">
-            <q-btn flat round icon="arrow_back" @click="$router.back()" />
-            <span class="fs-20 text-bold q-ml-sm">Usuarios del Banco: {{ dbs }}</span>
+            <q-btn flat round icon="arrow_back" color="black" @click="$router.back()" />
+            <span class="fs-20 text-black text-bold q-ml-sm">Usuarios del Banca: {{ dbs }}</span>
         </div>
         <q-table binary-state-sort @request="onRequest" v-model:pagination="pagination" loading-label="Cargando"
             :rows="users" :columns="columns" flat :loading="loading || loadingPagination" row-key="id"

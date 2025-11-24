@@ -21,6 +21,14 @@ const bankRoutes = {
     url: (id: number) => `admin/banks/${id}`,
     method: 'DELETE',
   },
+  enableBank: {
+    url: (id: number) => `admin/banks/${id}/enabled`,
+    method: 'PATCH',
+  },
+  disableBank: {
+    url: (id: number) => `admin/banks/${id}/disabled`,
+    method: 'PATCH',
+  },
 };
 
 export type Route = Pick<AxiosRequestConfig, 'url' | 'method'>;

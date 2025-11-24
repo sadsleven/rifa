@@ -173,4 +173,59 @@ export class RolesGateway {
       retryCondition: tokenExpired,
     });
   }
+
+
+  static async enableRole(
+    id: number,
+    token: string,
+    store: PiniaStore,
+    admin: boolean = true
+  ) {
+    const options: AxiosRequestConfig = {
+      ...setBasePath(
+        {
+          url: admin
+            ? this.routes.enableRole.url(id)
+            : this.routes.enableRoleOwner.url(id),
+          method: this.routes.enableRole.method,
+        },
+        this.basePath
+      ),
+    };
+
+    return HTTP.request<{ data: { message: string; messageCode: string } }>({
+      config: options,
+      token,
+      retries: 2,
+      onCatchError: refreshTokenAndRetry(store),
+      retryCondition: tokenExpired,
+    });
+  }
+
+  static async disableRole(
+    id: number,
+    token: string,
+    store: PiniaStore,
+    admin: boolean = true
+  ) {
+    const options: AxiosRequestConfig = {
+      ...setBasePath(
+        {
+          url: admin
+            ? this.routes.disableRole.url(id)
+            : this.routes.disableRoleOwner.url(id),
+          method: this.routes.disableRole.method,
+        },
+        this.basePath
+      ),
+    };
+
+    return HTTP.request<{ data: { message: string; messageCode: string } }>({
+      config: options,
+      token,
+      retries: 2,
+      onCatchError: refreshTokenAndRetry(store),
+      retryCondition: tokenExpired,
+    });
+  }
 }

@@ -21,6 +21,13 @@
             </template>
 
             <!-- ACTIONS COLUMN -->
+            <template v-slot:body-cell-enabled="props">
+                <q-td :props="props">
+                    <q-toggle v-model="props.row.enabled" color="app-primary"
+                        @update:model-value="handleEnableOrDisable(props.row)" />
+                </q-td>
+            </template>
+
             <template v-slot:body-cell-actions="props">
                 <q-td :props="props">
                     <q-btn unelevated dense flat round color="app-primary" icon="edit" @click="editRole(props.row)" />
@@ -64,7 +71,7 @@
 
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue';
-import { GetRolesUseCase, DeleteRoleUseCase } from '@modules/roles/domain/useCases';
+import { GetRolesUseCase, DeleteRoleUseCase, EnableOrDisableRoleUseCase } from '@modules/roles/domain/useCases';
 import { useRouter } from 'vue-router';
 import type { IRole } from '@modules/roles/infrastructure/interfaces/role.interface';
 import dayjs from 'dayjs';
@@ -97,6 +104,7 @@ const columns: any = [
             : '-'
             }`
     },
+    { name: 'enabled', align: 'left', label: 'Activo', field: 'enabled', sortable: false },
     { name: 'actions', align: 'left', label: 'Acciones' }
 ];
 
@@ -211,6 +219,28 @@ const handleDeleteRole = async () => {
     }
 
     loadingDelete.value = false;
+};
+
+const handleEnableOrDisable = async (row) => {
+    try {
+        await EnableOrDisableRoleUseCase.handle(row.id, row.enabled, props.admin);
+        $q.notify({
+            ...getNotifyDefaultOptions('success'),
+            message: `Rol ${row.enabled ? 'activado' : 'desactivado'} exitosamente.`
+        })
+    } catch (e: any) {
+        row.enabled = !row.enabled;
+        let errorMessage = t(`APIerrors.${e?.response?.data?.errorCode}`);
+
+        if (errorMessage.includes(e?.response?.data?.errorCode)) {
+            errorMessage = e?.response?.data?.errorMessage ?? 'Ha ocurrido un error inesperado.';
+        }
+
+        $q.notify({
+            ...getNotifyDefaultOptions('error'),
+            message: errorMessage
+        })
+    }
 };
 
 // LIFECYCLE HOOKS

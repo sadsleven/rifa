@@ -17,6 +17,13 @@
             </template>
 
             <!-- ACTIONS COLUMN -->
+            <template v-slot:body-cell-enabled="props">
+                <q-td :props="props">
+                    <q-toggle v-model="props.row.enabled" color="app-primary"
+                        @update:model-value="handleEnableOrDisable(props.row)" />
+                </q-td>
+            </template>
+
             <template v-slot:body-cell-actions="props">
                 <q-td :props="props">
                     <q-btn :disable="authStore.GetUser.id === props.row.id" unelevated dense flat round
@@ -61,7 +68,7 @@
 
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue';
-import { GetAdminsUseCase, DeleteAdminUseCase } from '@modules/admin/domain/useCases';
+import { GetAdminsUseCase, DeleteAdminUseCase, EnableOrDisableAdminUseCase } from '@modules/admin/domain/useCases';
 import { useRouter } from 'vue-router';
 import type { IAdmin } from '@modules/admin/infrastructure/interfaces/admin.interface';
 import dayjs from 'dayjs';
@@ -88,6 +95,7 @@ const columns: any = [
             : '-'
             }`
     },
+    { name: 'enabled', align: 'left', label: 'Activo', field: 'enabled', sortable: false },
     { name: 'actions', align: 'left', label: 'Acciones' }
 ];
 
@@ -202,6 +210,28 @@ const handleDeleteAdmin = async () => {
     }
 
     loadingDelete.value = false;
+};
+
+const handleEnableOrDisable = async (row) => {
+    try {
+        await EnableOrDisableAdminUseCase.handle(row.id, row.enabled);
+        $q.notify({
+            ...getNotifyDefaultOptions('success'),
+            message: `Admin ${row.enabled ? 'activado' : 'desactivado'} exitosamente.`
+        })
+    } catch (e: any) {
+        row.enabled = !row.enabled;
+        let errorMessage = t(`APIerrors.${e?.response?.data?.errorCode}`);
+
+        if (errorMessage.includes(e?.response?.data?.errorCode)) {
+            errorMessage = e?.response?.data?.errorMessage ?? 'Ha ocurrido un error inesperado.';
+        }
+
+        $q.notify({
+            ...getNotifyDefaultOptions('error'),
+            message: errorMessage
+        })
+    }
 };
 
 // LIFECYCLE HOOKS

@@ -2,7 +2,7 @@
     <q-page class="q-pa-lg">
         <div class="row items-center q-mb-md">
             <q-btn flat round icon="arrow_back" color="app-primary" @click="$router.push('/banks')" />
-            <span class="fs-20 text-bold text-black q-ml-sm">Rifas del Banco: {{ dbs }}</span>
+            <span class="fs-20 text-bold text-black q-ml-sm">Rifas del Banca: {{ dbs }}</span>
         </div>
         <q-table binary-state-sort @request="onRequest" v-model:pagination="pagination" loading-label="Cargando"
             :rows="raffles" :columns="columns" flat :loading="loading || loadingPagination" row-key="id"

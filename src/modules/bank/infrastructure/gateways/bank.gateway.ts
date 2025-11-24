@@ -108,4 +108,52 @@ export class BankGateway {
       retryCondition: tokenExpired,
     });
   }
+
+  static async enableBank(
+    id: number,
+    token: string,
+    store: PiniaStore
+  ) {
+    const options: AxiosRequestConfig = {
+      ...setBasePath(
+        {
+          url: this.routes.enableBank.url(id),
+          method: this.routes.enableBank.method,
+        },
+        this.basePath
+      ),
+    };
+
+    return HTTP.request<{ data: { message: string; messageCode: string } }>({
+      config: options,
+      token,
+      retries: 2,
+      onCatchError: refreshTokenAndRetry(store),
+      retryCondition: tokenExpired,
+    });
+  }
+
+  static async disableBank(
+    id: number,
+    token: string,
+    store: PiniaStore
+  ) {
+    const options: AxiosRequestConfig = {
+      ...setBasePath(
+        {
+          url: this.routes.disableBank.url(id),
+          method: this.routes.disableBank.method,
+        },
+        this.basePath
+      ),
+    };
+
+    return HTTP.request<{ data: { message: string; messageCode: string } }>({
+      config: options,
+      token,
+      retries: 2,
+      onCatchError: refreshTokenAndRetry(store),
+      retryCondition: tokenExpired,
+    });
+  }
 }
