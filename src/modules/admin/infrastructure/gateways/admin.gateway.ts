@@ -37,6 +37,30 @@ export class AdminGateway {
     });
   }
 
+  static async getAdminById(
+    id: number,
+    token: string,
+    store: PiniaStore
+  ) {
+    const options: AxiosRequestConfig = {
+      ...setBasePath(
+        {
+          url: this.routes.getAdminById.url(id),
+          method: this.routes.getAdminById.method,
+        },
+        this.basePath
+      ),
+    };
+
+    return HTTP.request<{ data: IAdmin }>({
+      config: options,
+      token,
+      retries: 2,
+      onCatchError: refreshTokenAndRetry(store),
+      retryCondition: tokenExpired,
+    });
+  }
+
   static async createAdmin(
     data: IAdminSchema,
     token: string,
@@ -98,6 +122,32 @@ export class AdminGateway {
         },
         this.basePath
       ),
+    };
+
+    return HTTP.request<{ data: { message: string; messageCode: string } }>({
+      config: options,
+      token,
+      retries: 2,
+      onCatchError: refreshTokenAndRetry(store),
+      retryCondition: tokenExpired,
+    });
+  }
+
+  static async updateAdminRoles(
+    roleIds: number[],
+    id: number,
+    token: string,
+    store: PiniaStore
+  ) {
+    const options: AxiosRequestConfig = {
+      ...setBasePath(
+        {
+          url: this.routes.updateAdminRoles.url(id),
+          method: this.routes.updateAdminRoles.method,
+        },
+        this.basePath
+      ),
+      data: { roleIds },
     };
 
     return HTTP.request<{ data: { message: string; messageCode: string } }>({

@@ -21,6 +21,10 @@ const adminRoutes = {
     url: (id: number) => `admin/admins/${id}`,
     method: 'DELETE',
   },
+  updateAdminRoles: {
+    url: (id: number) => `admin/admins/${id}/roles`,
+    method: 'PATCH',
+  },
 };
 
 export type Route = Pick<AxiosRequestConfig, 'url' | 'method'>;

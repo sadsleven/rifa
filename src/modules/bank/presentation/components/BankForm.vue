@@ -97,15 +97,15 @@
         </div>
       </div>
 
-      <div class="full-width flex justify-between q-mt-lg">
+      <div class="full-width flex justify-end q-mt-lg">
         <q-btn :disable="loading || loadingBank" no-caps unelevated flat color="black"
-          class="py-14 text-white br-8" @click="$router.back()">
+          class="mr-10 py-14 text-white br-8" @click="$router.back()">
           <span>
             {{ 'Cancelar' }}
           </span>
         </q-btn>
-        <q-btn no-caps unelevated :disable="loading || loadingBank" :loading="loading"
-          color="app-primary" class="py-14 text-white br-8" type="submit">
+        <q-btn no-caps unelevated :disable="loading || loadingBank" :loading="loading" color="app-primary"
+          class="py-14 text-white br-8" type="submit">
           <span>
             {{ `${!isUpdate ? 'Registrar' : 'Editar'} banco` }}
           </span>

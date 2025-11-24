@@ -19,9 +19,10 @@
             <!-- ACTIONS COLUMN -->
             <template v-slot:body-cell-actions="props">
                 <q-td :props="props">
-                    <q-btn unelevated dense flat round color="app-primary" icon="edit" @click="editAdmin(props.row)" />
-                    <q-btn unelevated dense flat round color="app-danger" icon="mdi-delete"
-                        @click="deleteAdmin(props.row)" />
+                    <q-btn :disable="authStore.GetUser.id === props.row.id" unelevated dense flat round
+                        color="app-primary" icon="edit" @click="editAdmin(props.row)" />
+                    <q-btn :disable="authStore.GetUser.id === props.row.id" unelevated dense flat round
+                        color="app-danger" icon="mdi-delete" @click="deleteAdmin(props.row)" />
                 </q-td>
             </template>
 
@@ -64,15 +65,17 @@ import { GetAdminsUseCase, DeleteAdminUseCase } from '@modules/admin/domain/useC
 import { useRouter } from 'vue-router';
 import type { IAdmin } from '@modules/admin/infrastructure/interfaces/admin.interface';
 import dayjs from 'dayjs';
-import type { ITablePagination } from 'app/src/common/interfaces';
-import { paginationHelper } from 'app/src/common/helpers/pagination-set-helper';
+import type { ITablePagination } from '@common/interfaces';
+import { paginationHelper } from '@common/helpers/pagination-set-helper';
 import { useI18n } from 'vue-i18n'
 import { useQuasar } from 'quasar';
-import { getNotifyDefaultOptions } from 'app/src/common/helpers/notify-default-options.helper';
+import { getNotifyDefaultOptions } from '@common/helpers/notify-default-options.helper';
+import { useAuthStore } from '@modules/auth/domain/store';
 
 const { t } = useI18n()
 const $q = useQuasar();
 const $router = useRouter();
+const authStore = useAuthStore();
 const columns: any = [
     { name: 'name', align: 'left', label: 'Nombre', field: 'name', sortable: false },
     { name: 'email', align: 'left', label: 'Email', field: 'email', sortable: false },

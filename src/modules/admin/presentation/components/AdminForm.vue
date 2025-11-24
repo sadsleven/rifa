@@ -30,16 +30,42 @@
               val => !!val || 'El teléfono es requerido'
             ]" />
         </div>
+        <div class="col-12 col-md-6 q-pa-md">
+          <span class="fs-14 text-black">
+            {{ 'Roles' }}
+          </span>
+          <q-select :disable="loading || loadingAdmin" outlined color="app-primary" v-model="formAdmin.roles"
+            :options="roleOptions" option-value="id" option-label="name" placeholder="Roles" class="mt-4" multiple
+            emit-value map-options>
+            <template v-slot:option="{ itemProps, opt, selected, toggleOption }">
+              <q-item v-bind="itemProps">
+                <q-item-section side>
+                  <q-checkbox color="app-primary" :model-value="selected" @update:model-value="toggleOption(opt)" />
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label class="text-black">
+                    {{ opt.name }}
+                  </q-item-label>
+                </q-item-section>
+              </q-item>
+            </template>
+            <template #selected-item="{ opt }">
+              <q-chip color="app-primary" class="fs-12 text-white text-medium">
+                {{ opt.name }}
+              </q-chip>
+            </template>
+          </q-select>
+        </div>
       </div>
-      <div class="full-width flex justify-between">
+      <div class="full-width flex justify-end">
         <q-btn :disable="loading || loadingAdmin" no-caps unelevated flat color="black"
-          class="py-14 text-white br-8" @click="$router.back()">
+          class="mr-10 py-14 text-white br-8" @click="$router.back()">
           <span>
             {{ 'Cancelar' }}
           </span>
         </q-btn>
-        <q-btn no-caps unelevated :disable="loading || loadingAdmin" :loading="loading"
-          color="app-primary" class="py-14 text-white br-8" type="submit">
+        <q-btn no-caps unelevated :disable="loading || loadingAdmin" :loading="loading" color="app-primary"
+          class="py-14 text-white br-8" type="submit">
           <span>
             {{ `${!isUpdate ? 'Registrar' : 'Editar'} admin` }}
           </span>
@@ -53,7 +79,8 @@
 <script lang="ts" setup>
 import { reactive, ref, onMounted } from 'vue';
 import { QForm, useQuasar } from 'quasar';
-import { CreateAdminUseCase, EditAdminUseCase, GetAdminsUseCase } from '@modules/admin/domain/useCases';
+import { CreateAdminUseCase, EditAdminUseCase, GetAdminByIdUseCase, AssignRoleToAdminUseCase } from '@modules/admin/domain/useCases';
+import { GetRolesUseCase } from '@modules/roles/domain/useCases';
 import { useRouter } from 'vue-router';
 import type { IAdmin } from '@modules/admin/infrastructure/interfaces/admin.interface';
 import { getNotifyDefaultOptions } from 'app/src/common/helpers/notify-default-options.helper';
@@ -69,12 +96,14 @@ const formRef = ref<QForm | null>(null);
 const loading = ref<boolean>(false);
 const admin = ref<IAdmin | null>(null);
 const loadingAdmin = ref<boolean>(false);
+const roleOptions = ref<{ id: number; name: string }[]>([]);
 
 // REACTIVE
 const formAdmin = reactive({
   name: '',
   email: '',
   phone: '',
+  roles: [] as number[],
 });
 
 const props = defineProps({
@@ -97,7 +126,12 @@ const handleUploadAdmin = async () => {
 
   if (!props.isUpdate) {
     try {
-      await CreateAdminUseCase.handle(formAdmin);
+      const response: any = await CreateAdminUseCase.handle({ name: formAdmin.name, email: formAdmin.email, phone: formAdmin.phone });
+
+      if (formAdmin.roles.length > 0) {
+        await AssignRoleToAdminUseCase.handle(formAdmin.roles, response?.data?.data?.args?.id);
+      }
+
       $q.notify({
         ...getNotifyDefaultOptions('success'),
         message: 'Admin creado exitosamente.'
@@ -120,7 +154,12 @@ const handleUploadAdmin = async () => {
   else {
     if (!props.adminId) return;
     try {
-      await EditAdminUseCase.handle(formAdmin, props.adminId);
+      await EditAdminUseCase.handle({ name: formAdmin.name, email: formAdmin.email, phone: formAdmin.phone }, props.adminId);
+
+      if (formAdmin.roles.length > 0) {
+        await AssignRoleToAdminUseCase.handle(formAdmin.roles, props.adminId);
+      }
+
       $q.notify({
         ...getNotifyDefaultOptions('success'),
         message: 'Admin editado exitosamente.'
@@ -149,31 +188,55 @@ const handleGetAdmin = async () => {
   loadingAdmin.value = true;
 
   try {
-    // Note: Use GetAdminsUseCase or a specific GetAdminByIdUseCase if available.
-    // Assuming GetAdminsUseCase can filter or we need a new use case.
-    // For now, I'll assume we might need to fetch the list and find it, or better, implement GetAdminByIdUseCase.
-    // But wait, I implemented GetAdminsUseCase. I should probably implement GetAdminByIdUseCase or similar.
-    // Actually, I defined `getAdminById` route but didn't implement the use case.
-    // Let's implement it quickly or use a workaround.
-    // I'll assume for now we can't fetch by ID easily without the use case.
-    // I'll add GetAdminByIdUseCase to the plan or just implement it now.
-    // I'll implement it in the next step if needed, but for now I'll comment it out or use a placeholder.
-    // Actually, I can just implement it inline here if I had the gateway method exposed.
-    // I exposed `getAdminById` in routes but not in Gateway explicitly?
-    // Let's check Gateway.
-    // I didn't implement `getAdminById` in Gateway. I only did `getAdmins`.
-    // I should fix that.
+    const response = await GetAdminByIdUseCase.handle(props.adminId);
+    if (response && response.data) {
+      admin.value = response.data.data;
+      formAdmin.name = admin.value.name;
+      formAdmin.email = admin.value.email;
+      formAdmin.phone = admin.value.phone;
+      formAdmin.roles = admin.value.roles ? admin.value.roles.map(r => r.id) : [];
+    }
   }
   catch (e: any) {
-    // ...
+    let errorMessage = t(`APIerrors.${e?.response?.data?.errorCode}`);
+
+    if (errorMessage.includes(e?.response?.data?.errorCode)) {
+      errorMessage = e?.response?.data?.errorMessage ?? 'Ha ocurrido un error inesperado.';
+    }
+
+    $q.notify({
+      ...getNotifyDefaultOptions('error'),
+      message: errorMessage
+    })
   }
   loadingAdmin.value = false;
 };
 
+const getRoles = async () => {
+  try {
+    const response = await GetRolesUseCase.handle('');
+    if (response && response.data) {
+      roleOptions.value = response.data.data;
+    }
+  } catch (e: any) {
+    let errorMessage = t(`APIerrors.${e?.response?.data?.errorCode}`);
+
+    if (errorMessage.includes(e?.response?.data?.errorCode)) {
+      errorMessage = e?.response?.data?.errorMessage ?? 'Ha ocurrido un error inesperado.';
+    }
+
+    $q.notify({
+      ...getNotifyDefaultOptions('error'),
+      message: errorMessage
+    })
+  }
+};
+
 // LIFECYCLE HOOKS
 onMounted(async () => {
+  await getRoles();
   if (props.isUpdate) {
-    // await handleGetAdmin();
+    await handleGetAdmin();
   }
 });
 

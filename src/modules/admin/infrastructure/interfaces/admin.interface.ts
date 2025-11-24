@@ -5,6 +5,7 @@ export interface IAdmin {
   phone: string;
   createdAt?: string;
   updatedAt?: string;
+  roles?: { id: number; name: string }[];
 }
 
 export interface IAdminSchema {

@@ -54,9 +54,9 @@
           </q-select>
         </div>
       </div>
-      <div class="full-width flex justify-between">
+      <div class="full-width flex justify-end">
         <q-btn :disable="loading || loadingRole || loadingPermissions" no-caps unelevated flat color="black"
-          class="py-14 text-white br-8" @click="$router.back()">
+          class="mr-10 py-14 text-white br-8" @click="$router.back()">
           <span>
             {{ 'Cancelar' }}
           </span>

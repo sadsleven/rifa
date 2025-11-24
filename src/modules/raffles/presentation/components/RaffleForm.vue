@@ -110,7 +110,9 @@
             </div>
             <div class="row">
               <div class="col-12 col-md-6 q-pa-xs">
-                <q-select dense outlined v-model="place.rewardsYes" :options="['exactNumber', 'upperApproximation', 'lowerApproximation', 'terminal']" label="Tipo de Premio" />
+                <q-select dense outlined v-model="place.rewardsYes"
+                  :options="['exactNumber', 'upperApproximation', 'lowerApproximation', 'terminal']"
+                  label="Tipo de Premio" />
               </div>
               <div class="col-12 col-md-6 q-pa-xs">
                 <q-select dense outlined v-model="place.type" :options="['physical', 'money']" label="Tipo" />
@@ -125,20 +127,21 @@
                 <q-input dense outlined v-model="place.description" label="Descripción" />
               </div>
             </div>
-            
+
             <!-- ImgUrls inside Place -->
             <div class="q-pl-md q-mt-sm">
-               <div class="row items-center justify-between">
+              <div class="row items-center justify-between">
                 <span class="text-caption text-bold">Imágenes del Premio (Min 1)</span>
                 <q-btn round dense flat size="sm" color="primary" icon="add" @click="addPlaceImgUrl(index)" />
               </div>
               <div v-for="(url, uIndex) in place.imgUrls" :key="uIndex" class="row q-mb-xs items-center">
-                 <div class="col-11 q-pa-xs">
-                    <q-input dense outlined v-model="place.imgUrls[uIndex]" label="URL Imagen" />
-                 </div>
-                 <div class="col-1 q-pa-xs flex flex-center">
-                    <q-btn round dense flat size="sm" color="negative" icon="delete" @click="removePlaceImgUrl(index, uIndex)" />
-                 </div>
+                <div class="col-11 q-pa-xs">
+                  <q-input dense outlined v-model="place.imgUrls[uIndex]" label="URL Imagen" />
+                </div>
+                <div class="col-1 q-pa-xs flex flex-center">
+                  <q-btn round dense flat size="sm" color="negative" icon="delete"
+                    @click="removePlaceImgUrl(index, uIndex)" />
+                </div>
               </div>
               <div v-if="place.imgUrls.length === 0" class="text-negative text-caption">
                 Debe agregar al menos una imagen para el premio.
@@ -174,9 +177,9 @@
         </div>
       </div>
 
-      <div class="full-width flex justify-between q-mt-lg">
-        <q-btn :disable="loading || loadingRaffle" no-caps unelevated flat color="black" class="py-14 text-white br-8"
-          @click="$router.back()">
+      <div class="full-width flex justify-end q-mt-lg">
+        <q-btn :disable="loading || loadingRaffle" no-caps unelevated flat color="black"
+          class="mr-10 py-14 text-white br-8" @click="$router.back()">
           <span>
             {{ 'Cancelar' }}
           </span>
