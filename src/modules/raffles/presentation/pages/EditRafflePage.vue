@@ -1,5 +1,8 @@
 <template>
   <q-page class="q-pa-lg ">
+    <h1 class="fs-25 no-margin">
+      Editar rifa
+    </h1>
     <RaffleForm :is-update="true" :raffle-id="+$route.params.id" />
   </q-page>
 </template>

@@ -31,33 +31,97 @@
             ]" />
         </div>
         <div class="col-12 col-md-6 q-pa-md">
-          <div class="row items-center justify-between">
+          <div class="row items-center justify-start">
             <span class="fs-14 text-black">{{ 'Imágenes Adicionales' }}</span>
-            <q-btn round dense flat color="primary" icon="add" size="sm" @click="addImgUrl" />
+            <q-btn class="ml-4" round dense flat color="primary" icon="add" size="md" @click="addImgUrl" />
           </div>
           <div v-for="(url, index) in formRaffle.imgUrls" :key="index" class="row items-center q-mt-xs">
             <q-input dense outlined v-model.trim="formRaffle.imgUrls[index]" placeholder="URL" class="col" />
-            <q-btn round dense flat color="negative" icon="delete" size="sm" @click="removeImgUrl(index)" />
+            <q-btn round dense flat color="negative" icon="delete" size="md" @click="removeImgUrl(index)" />
           </div>
         </div>
         <div class="col-12 col-md-6 q-pa-md">
           <span class="fs-14 text-black">
-            {{ 'Fecha de Inicio' }}
+            {{ 'Fecha inicio' }}
           </span>
-          <q-input :disable="loading || loadingRaffle" outlined color="app-primary" v-model="formRaffle.startDate"
-            type="datetime-local" ref="startDateInp" class="mt-4" :rules="[
-              validate('startDate')
-            ]" />
+          <q-input readonly :disable="loading || loadingRaffle" color="app-primary" outlined
+            v-model="formRaffle.startDate" placeholder="DD/MM/AAAA" mask="##/##/####" :rules="[validate('startDate')]">
+            <template v-slot:append>
+              <q-icon name="event" class="cursor-pointer">
+                <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                  <q-date mask="DD/MM/YYYY" color="app-primary" v-model="formRaffle.startDate">
+                    <div class="row items-center justify-end">
+                      <q-btn v-close-popup label="Cerrar" color="app-primary" flat />
+                    </div>
+                  </q-date>
+                </q-popup-proxy>
+              </q-icon>
+            </template>
+          </q-input>
         </div>
+
         <div class="col-12 col-md-6 q-pa-md">
           <span class="fs-14 text-black">
-            {{ 'Fecha de Fin' }}
+            {{ 'Hora inicio' }}
           </span>
-          <q-input :disable="loading || loadingRaffle" outlined color="app-primary" v-model="formRaffle.endDate"
-            type="datetime-local" ref="endDateInp" class="mt-4" :rules="[
-              validate('endDate')
-            ]" />
+
+          <q-input :disable="loading || loadingRaffle" readonly outlined v-model="formRaffle.startTime" mask="time"
+            :rules="[validate('startDate')]">
+            <template v-slot:append>
+              <q-icon name="access_time" class="cursor-pointer">
+                <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                  <q-time color="app-primary" v-model="formRaffle.startTime">
+                    <div class="row items-center justify-end">
+                      <q-btn v-close-popup label="Cerrar" color="app-primary" flat />
+                    </div>
+                  </q-time>
+                </q-popup-proxy>
+              </q-icon>
+            </template>
+          </q-input>
         </div>
+
+        <div class="col-12 col-md-6 q-pa-md">
+          <span class="fs-14 text-black">
+            {{ 'Fecha fin' }}
+          </span>
+          <q-input readonly :disable="loading || loadingRaffle" color="app-primary" outlined
+            v-model="formRaffle.endDate" placeholder="DD/MM/AAAA" mask="##/##/####" :rules="[validate('endDate')]">
+            <template v-slot:append>
+              <q-icon name="event" class="cursor-pointer">
+                <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                  <q-date mask="DD/MM/YYYY" color="app-primary" v-model="formRaffle.endDate">
+                    <div class="row items-center justify-end">
+                      <q-btn v-close-popup label="Cerrar" color="app-primary" flat />
+                    </div>
+                  </q-date>
+                </q-popup-proxy>
+              </q-icon>
+            </template>
+          </q-input>
+        </div>
+
+        <div class="col-12 col-md-6 q-pa-md">
+          <span class="fs-14 text-black">
+            {{ 'Hora fin' }}
+          </span>
+
+          <q-input :disable="loading || loadingRaffle" readonly outlined v-model="formRaffle.endTime" mask="time"
+            :rules="[validate('endDate')]">
+            <template v-slot:append>
+              <q-icon name="access_time" class="cursor-pointer">
+                <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                  <q-time color="app-primary" v-model="formRaffle.endTime">
+                    <div class="row items-center justify-end">
+                      <q-btn v-close-popup label="Cerrar" color="app-primary" flat />
+                    </div>
+                  </q-time>
+                </q-popup-proxy>
+              </q-icon>
+            </template>
+          </q-input>
+        </div>
+
         <div class="col-12 col-md-6 q-pa-md">
           <span class="fs-14 text-black">
             {{ 'Dígitos del Ticket' }}
@@ -92,7 +156,11 @@
             {{ 'Tipo de Asignación' }}
           </span>
           <q-select :disable="loading || loadingRaffle" outlined color="app-primary" v-model="formRaffle.assignmentType"
-            :options="['increment', 'random']" label="Tipo de Asignación" class="mt-4" />
+            :options="assignmentOptions" class="mt-4">
+            <template #selected-item="{ opt }">
+              {{assignmentOptions.find(ro => ro.value === opt)?.label}}
+            </template>
+          </q-select>
         </div>
       </div>
 
@@ -103,47 +171,84 @@
             <span class="fs-16 text-bold text-black">Lugares (Premios)</span>
             <q-btn round dense flat color="primary" icon="add" @click="addPlace" />
           </div>
-          <div v-for="(place, index) in formRaffle.places" :key="index" class="q-pa-sm q-mb-sm bg-grey-2 br-8">
+          <div v-for="(place, index) in formRaffle.places" :key="index" class="q-pa-sm q-mb-sm bg-grey-1 br-8">
             <div class="row items-center justify-between">
-              <span class="text-bold">Lugar #{{ place.place }}</span>
+              <span class="pl-5 fs-12 text-caption text-semi-bold  text-black">Lugar #{{ place.place }}</span>
               <q-btn round dense flat color="negative" icon="delete" @click="removePlace(index)" />
             </div>
             <div class="row">
               <div class="col-12 col-md-6 q-pa-xs">
-                <q-select dense outlined v-model="place.rewardsYes"
-                  :options="['exactNumber', 'upperApproximation', 'lowerApproximation', 'terminal']"
-                  label="Tipo de Premio" :rules="[validatePlace('rewardsYes')]" />
+                <q-select color="app-primary" dense emit-value outlined v-model="place.rewardsYes"
+                  :options="rewardOption" label="Tipo de Premio" :rules="[validatePlace('rewardsYes')]">
+                  <template #selected-item="{ opt }">
+                    {{rewardOption.find(ro => ro.value === opt)?.label}}
+                  </template>
+                </q-select>
               </div>
               <div class="col-12 col-md-6 q-pa-xs">
-                <q-select dense outlined v-model="place.type" :options="['physical', 'money']" label="Tipo"
-                  :rules="[validatePlace('type')]" />
+                <q-select color="app-primary" dense outlined v-model="place.type" :options="placeOptions" label="Tipo"
+                  :rules="[validatePlace('type')]">
+                  <template #selected-item="{ opt }">
+                    {{placeOptions.find(ro => ro.value === opt)?.label}}
+                  </template>
+                </q-select>
               </div>
               <div class="col-12 col-md-6 q-pa-xs">
-                <q-input dense outlined v-model.number="place.amount" type="number" label="Cantidad"
+                <q-input color="app-primary" dense outlined v-model.number="place.amount" type="number" label="Cantidad"
                   :rules="[validatePlace('amount')]" />
               </div>
               <div class="col-12 col-md-6 q-pa-xs">
-                <q-input dense outlined v-model="place.lotteryAt" type="datetime-local" label="Fecha Sorteo"
-                  :rules="[validatePlace('lotteryAt')]" />
-              </div>
-              <div class="col-12 col-md-12 q-pa-xs">
-                <q-input dense outlined v-model="place.description" label="Descripción"
+                <q-input color="app-primary" dense outlined v-model="place.description" label="Descripción"
                   :rules="[validatePlace('description')]" />
+              </div>
+              <div class="col-12 col-md-6 q-pa-xs">
+                <q-input label="Fecha Sorteo" readonly dense :disable="loading || loadingRaffle" color="app-primary"
+                  outlined v-model="place.lotteryAt" placeholder="DD/MM/AAAA" mask="##/##/####"
+                  :rules="[validatePlace('lotteryAt')]">
+                  <template v-slot:append>
+                    <q-icon name="event" class="cursor-pointer">
+                      <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                        <q-date mask="DD/MM/YYYY" color="app-primary" v-model="place.lotteryAt">
+                          <div class="row items-center justify-end">
+                            <q-btn v-close-popup label="Cerrar" color="app-primary" flat />
+                          </div>
+                        </q-date>
+                      </q-popup-proxy>
+                    </q-icon>
+                  </template>
+                </q-input>
+              </div>
+              <div class="col-12 col-md-6 q-pa-xs">
+                <q-input label="Hora Sorteo" readonly dense :disable="loading || loadingRaffle" outlined
+                  v-model="place.lotteryTime" mask="time" :rules="[validatePlace('lotteryAt')]">
+                  <template v-slot:append>
+                    <q-icon name="access_time" class="cursor-pointer">
+                      <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                        <q-time color="app-primary" v-model="place.lotteryTime">
+                          <div class="row items-center justify-end">
+                            <q-btn v-close-popup label="Cerrar" color="app-primary" flat />
+                          </div>
+                        </q-time>
+                      </q-popup-proxy>
+                    </q-icon>
+                  </template>
+                </q-input>
               </div>
             </div>
 
             <!-- ImgUrls inside Place -->
-            <div class="q-pl-md q-mt-sm">
-              <div class="row items-center justify-between">
-                <span class="text-caption text-bold">Imágenes del Premio (Min 1)</span>
-                <q-btn round dense flat size="sm" color="primary" icon="add" @click="addPlaceImgUrl(index)" />
+            <div class=" q-mt-sm">
+              <div class="row items-center justify-start">
+                <span class="pl-5 fs-12 text-caption text-semi-bold text-black">Imágenes del Premio (Min 1)</span>
+                <q-btn round dense flat size="md" class="ml-4" color="primary" icon="add"
+                  @click="addPlaceImgUrl(index)" />
               </div>
               <div v-for="(url, uIndex) in place.imgUrls" :key="uIndex" class="row q-mb-xs items-center">
                 <div class="col-11 q-pa-xs">
                   <q-input dense outlined v-model="place.imgUrls[uIndex]" label="URL Imagen" />
                 </div>
-                <div class="col-1 q-pa-xs flex flex-center">
-                  <q-btn round dense flat size="sm" color="negative" icon="delete"
+                <div class="col-1 flex flex-center">
+                  <q-btn round dense flat size="md" color="negative" icon="delete"
                     @click="removePlaceImgUrl(index, uIndex)" />
                 </div>
               </div>
@@ -167,11 +272,11 @@
           </div>
           <div class="row">
             <div v-for="(qp, index) in formRaffle.quickPurchases" :key="index" class="col-12 col-md-4 q-pa-sm">
-              <div class="row items-center q-gutter-x-sm bg-grey-2 q-pa-sm br-8">
-                <q-input dense outlined v-model.number="qp.minTickets" type="number" label="Min Tickets" class="col"
-                  :rules="[validateQP('minTickets')]" />
-                <q-input dense outlined v-model.number="qp.discountPercentage" type="number" label="% Desc" class="col"
-                  :rules="[validateQP('discountPercentage')]" />
+              <div class="row items-center q-gutter-x-sm bg-grey-1 q-pa-sm br-8">
+                <q-input hide-bottom-space dense outlined v-model.number="qp.minTickets" type="number"
+                  label="Min Tickets" class="col" :rules="[validateQP('minTickets')]" />
+                <q-input hide-bottom-space dense outlined v-model.number="qp.discountPercentage" type="number"
+                  label="% Desc" class="col" :rules="[validateQP('discountPercentage')]" />
                 <q-btn round dense flat color="negative" icon="delete" @click="removeQuickPurchase(index)" />
               </div>
             </div>
@@ -209,6 +314,10 @@ import { useRouter, useRoute } from 'vue-router';
 import type { IRaffle, IRafflePlace, IRaffleQuickPurchase } from '@modules/raffles/infrastructure/interfaces/raffle.interface';
 import { getNotifyDefaultOptions } from 'app/src/common/helpers/notify-default-options.helper';
 import { useI18n } from 'vue-i18n';
+import dayjs from 'dayjs';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
+dayjs.extend(customParseFormat)
+
 
 // CONSTANTS
 const { t } = useI18n()
@@ -219,6 +328,26 @@ const dbs = $route.params.dbs as string;
 const validate = CreateRaffleUseCase.validateAt;
 const validatePlace = CreateRaffleUseCase.validatePlaceAt;
 const validateQP = CreateRaffleUseCase.validateQuickPurchaseAt;
+const rewardOption = [
+  { label: 'Número Exacto', value: 'exactNumber' },
+  { label: 'Último Número', value: 'lastNumber' },
+  { label: 'Últimos Dos Números', value: 'lastTwoNumbers' },
+  { label: 'Últimos Tres Números', value: 'lastThreeNumbers' },
+];
+const placeOptions = [
+  {
+    label: 'Físico',
+    value: 'physical'
+  },
+  {
+    label: 'Dinero',
+    value: 'money'
+  }
+]
+const assignmentOptions = [
+  { label: 'Incremental', value: 'increment' },
+  { label: 'Aleatorio', value: 'random' }
+]
 
 // REFS
 const formRef = ref<QForm | null>(null);
@@ -234,6 +363,8 @@ const formRaffle = reactive({
   imgUrls: [] as string[],
   startDate: '',
   endDate: '',
+  startTime: '',
+  endTime: '',
   ticketDigits: 3,
   ticketPrice: 0,
   currency: 'VES',
@@ -262,6 +393,7 @@ const addPlace = () => {
     type: 'physical',
     amount: 1,
     lotteryAt: '',
+    lotteryTime: '',
     description: '',
     imgUrls: [''] // Initialize with one empty string to show input
   });
@@ -332,7 +464,36 @@ const handleUploadRaffle = async () => {
 
   if (!props.isUpdate) {
     try {
-      await CreateRaffleUseCase.handle(dbs, formRaffle);
+      const payload = { ...formRaffle };
+      payload.places = [...formRaffle.places]
+
+      const isoDateTimeStart = dayjs(
+        `${formRaffle.startDate} ${formRaffle.startTime}`,
+        'DD/MM/YYYY HH:mm'
+      ).toISOString();
+
+      const isoDateTimeEnd = dayjs(
+        `${formRaffle.endDate} ${formRaffle.endTime}`,
+        'DD/MM/YYYY HH:mm'
+      ).toISOString();
+
+      payload.startDate = isoDateTimeStart;
+      payload.endDate = isoDateTimeEnd;
+
+      delete payload.startTime;
+      delete payload.endTime;
+
+      payload.places.forEach(element => {
+        const isoDateTimePlace = dayjs(
+          `${element.lotteryAt} ${element.lotteryTime}`,
+          'DD/MM/YYYY HH:mm'
+        ).toISOString();
+
+        element.lotteryAt = isoDateTimePlace;
+        delete element.lotteryTime;
+      });
+
+      await CreateRaffleUseCase.handle(dbs, payload);
       $q.notify({
         ...getNotifyDefaultOptions('success'),
         message: 'Rifa creada exitosamente.'

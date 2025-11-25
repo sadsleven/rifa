@@ -1,6 +1,6 @@
 <template>
   <div>
-    <q-form class="self-end wp-100 hp-60-vh" ref="formRef" greedy @submit="handleUploadBank">
+    <q-form class="self-end wp-100" ref="formRef" greedy @submit="handleUploadBank">
       <div class="row">
         <div class="col-12 col-md-6 q-pa-md">
           <span class="fs-14 text-black">
@@ -173,6 +173,12 @@ const handleUploadBank = async () => {
 
   if (!props.isUpdate) {
     try {
+      if (formBank.urlBg === '') {
+        formBank.urlBg = null
+      }
+      if (formBank.urlLogo === '') {
+        formBank.urlLogo = null
+      }
       const response: any = await CreateBankUseCase.handle(formBank);
 
       $q.notify({
@@ -199,6 +205,12 @@ const handleUploadBank = async () => {
   else {
     if (!bank.value.id) return;
     try {
+      if (formBank.urlBg === '') {
+        formBank.urlBg = null
+      }
+      if (formBank.urlLogo === '') {
+        formBank.urlLogo = null
+      }
       const payload = { ...formBank }
       delete payload.owner
       delete payload.dbs

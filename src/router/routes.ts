@@ -16,8 +16,24 @@ const routes: RouteRecordRaw[] = [
       requiresAuth: false,
     },
   },
+
   {
     path: '/dashboard',
+    component: () => import('@common/layouts/MainLayout.vue'),
+    children: [
+      {
+        path: '/dashboard',
+        component: () =>
+          import('@modules/auth/presentation/pages/HomePage.vue'),
+      },
+    ],
+    meta: {
+      requiresAuth: true,
+    },
+  },
+
+  {
+    path: '/roles',
     component: () => import('@common/layouts/MainLayout.vue'),
     children: [
       {
@@ -50,6 +66,16 @@ const routes: RouteRecordRaw[] = [
         component: () =>
           import('@modules/roles/presentation/pages/EditRoleOwner.vue'),
       },
+    ],
+    meta: {
+      requiresAuth: true,
+    },
+  },
+
+  {
+    path: '/admins',
+    component: () => import('@common/layouts/MainLayout.vue'),
+    children: [
       {
         path: '/admins',
         component: () =>
@@ -65,6 +91,16 @@ const routes: RouteRecordRaw[] = [
         component: () =>
           import('@modules/admin/presentation/pages/EditAdminPage.vue'),
       },
+    ],
+    meta: {
+      requiresAuth: true,
+    },
+  },
+
+  {
+    path: '/banks',
+    component: () => import('@common/layouts/MainLayout.vue'),
+    children: [
       {
         path: '/banks',
         component: () =>
@@ -81,9 +117,19 @@ const routes: RouteRecordRaw[] = [
           import('@modules/bank/presentation/pages/EditBankPage.vue'),
       },
       {
+        path: '/banks/:dbs/admins',
+        component: () =>
+          import('@modules/admin/presentation/pages/AdminBanksPage.vue'),
+      },
+      {
         path: '/banks/:dbs/users',
         component: () =>
           import('@modules/user/presentation/pages/UserPage.vue'),
+      },
+      {
+        path: '/banks/admin/:dbs/raffles',
+        component: () =>
+          import('@modules/raffles/presentation/pages/RafflePage.vue'),
       },
       {
         path: '/banks/:dbs/raffles',
@@ -105,10 +151,7 @@ const routes: RouteRecordRaw[] = [
       requiresAuth: true,
     },
   },
-  {
-    path: '/404',
-    component: () => import('@common/pages/ErrorNotFound.vue'),
-  },
+
   // Always leave this as last one,
   // but you can also remove it
   {

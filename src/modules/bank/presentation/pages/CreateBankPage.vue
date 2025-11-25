@@ -1,5 +1,8 @@
 <template>
   <q-page class="q-pa-lg ">
+    <h1 class="fs-25 no-margin">
+      Crear banca
+    </h1>
     <BankForm :is-update="false" />
   </q-page>
 </template>

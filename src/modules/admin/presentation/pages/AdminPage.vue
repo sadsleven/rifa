@@ -1,5 +1,8 @@
 <template>
     <q-page class="q-pa-lg ">
+        <h1 class="fs-25 no-margin">
+            Administradores
+        </h1>
         <q-table binary-state-sort @request="onRequest" v-model:pagination="pagination" loading-label="Cargando"
             :rows="admins" :columns="columns" flat :loading="loading || loadingPagination" row-key="id"
             style="width: 100%;" :rows-per-page-options="[10, 15, 20, 30]"
@@ -86,6 +89,15 @@ const $router = useRouter();
 const authStore = useAuthStore();
 const columns: any = [
     { name: 'name', align: 'left', label: 'Nombre', field: 'name', sortable: false },
+
+    {
+        name: 'bankDbs', align: 'left', label: 'Banca', sortable: false,
+        field: row => row,
+        format: val => `${val.bankDbs
+            ? val.bankDbs
+            : 'No aplica'
+            }`
+    },
     { name: 'email', align: 'left', label: 'Email', field: 'email', sortable: false },
     { name: 'phone', align: 'left', label: 'Teléfono', field: 'phone', sortable: false },
     {
@@ -93,7 +105,7 @@ const columns: any = [
         field: row => row,
         format: val => `${val.createdAt
             ? dayjs.unix(val.createdAt).format('DD-MM-YYYY HH:mm')
-            : '-'
+            : 'No aplica'
             }`
     },
     { name: 'enabled', align: 'left', label: 'Activo', field: 'enabled', sortable: false },

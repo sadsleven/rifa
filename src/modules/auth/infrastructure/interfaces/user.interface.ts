@@ -6,6 +6,7 @@ export interface IUser extends IBaseEntity {
   phone: string;
   enabled: boolean;
   isSuperAdmin: boolean;
+  bankDbs?: string;
   permissions: [];
   roles: [];
 }

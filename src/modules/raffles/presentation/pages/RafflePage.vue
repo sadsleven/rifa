@@ -2,7 +2,7 @@
     <q-page class="q-pa-lg">
         <div class="row items-center q-mb-md">
             <q-btn flat round icon="arrow_back" color="app-primary" @click="$router.push('/banks')" />
-            <span class="fs-20 text-bold text-black q-ml-sm">Rifas del Banca: {{ dbs }}</span>
+            <span class="fs-20 text-bold text-black q-ml-sm">Rifas de la Banca: {{ dbs }}</span>
         </div>
         <q-table binary-state-sort @request="onRequest" v-model:pagination="pagination" loading-label="Cargando"
             :rows="raffles" :columns="columns" flat :loading="loading || loadingPagination" row-key="id"
@@ -11,7 +11,7 @@
             rows-per-page-label="Rifas por página">
             <!-- CREATE RAFFLE BTN -->
             <template v-slot:top-right>
-                <q-btn unelevated :class="{
+                <q-btn v-if="!isAdmin" unelevated :class="{
                     'fs-14 q-mb-md': $q.screen.width < 1065 && $q.screen.width > 800,
                     'full-width': $q.screen.width < 1065,
                 }" class="text-medium br-6" no-caps @click="$router.push(`/banks/${dbs}/raffles/create`)"
@@ -81,17 +81,25 @@ const $q = useQuasar();
 const $router = useRouter();
 const $route = useRoute();
 const dbs = $route.params.dbs as string;
+const isAdmin = $route.path.includes('/banks/admin')
 
 const columns: any = [
     { name: 'title', align: 'left', label: 'Título', field: 'title', sortable: false },
-    { name: 'status', align: 'left', label: 'Estatus', field: 'status', sortable: false },
+    {
+        name: 'status', align: 'left', label: 'Estatus', sortable: true,
+        field: row => row,
+        format: val => `${val.status
+            ? t(`raffleStatus.${val.status}`)
+            : '-'
+            }`
+    },
     { name: 'ticketPrice', align: 'left', label: 'Precio', field: 'ticketPrice', sortable: false },
-    { name: 'currency', align: 'left', label: 'Moneda', field: 'currency', sortable: false },
+    { name: 'ticketAvailable', align: 'left', label: 'Tickets disponibles', field: 'ticketAvailable', sortable: false },
     {
         name: 'startDate', align: 'left', label: 'Inicio', sortable: true,
         field: row => row,
         format: val => `${val.startDate
-            ? dayjs(val.startDate).format('DD-MM-YYYY HH:mm')
+            ? dayjs.unix(val.startDate).format('DD-MM-YYYY HH:mm')
             : '-'
             }`
     },
@@ -99,11 +107,19 @@ const columns: any = [
         name: 'endDate', align: 'left', label: 'Fin', sortable: true,
         field: row => row,
         format: val => `${val.endDate
-            ? dayjs(val.endDate).format('DD-MM-YYYY HH:mm')
+            ? dayjs.unix(val.endDate).format('DD-MM-YYYY HH:mm')
             : '-'
             }`
     },
-    { name: 'actions', align: 'left', label: 'Acciones' }
+    {
+        name: 'createdAt', align: 'left', label: 'Creado el', sortable: true,
+        field: row => row,
+        format: val => `${val.createdAt
+            ? dayjs.unix(val.createdAt).format('DD-MM-YYYY HH:mm')
+            : 'No aplica'
+            }`
+    },
+    !isAdmin ? { name: 'actions', align: 'left', label: 'Acciones' } : {}
 ];
 
 // REFS

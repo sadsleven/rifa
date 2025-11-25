@@ -1,16 +1,11 @@
 <template>
-  <q-layout view="lhh lpR lFf" class="bg-white">
-    <div class="custom-header-before">
-    </div>
-    <q-header dense class="flex row bg-white custom-header" height-hint="96" style="height: 96px;">
+  <q-layout view="lHh Lpr lFf" class="bg-white">
+    <q-header dense elevated class="flex row bg-white custom-header" height-hint="70" style="height: 70px;">
       <q-toolbar class="justify-center">
         <q-toolbar-title>
-          <div class="flex justify-start items-center q-pl-md">
-            <q-icon name="mdi-tab" color="app-primary" size="24px" />
-            <h1 class="text-black q-ml-sm fs-20 text-weight-bold lh-24 ls-1">
-              Dashboard
-            </h1>
-          </div>
+          <q-btn flat dense round class="mb-1" :class="{ 'mr-7': !$q.screen.lt.md }" color="app-primary"
+            aria-label="Menu" @click="toggleLeftDrawer" icon="mdi-menu">
+          </q-btn>
         </q-toolbar-title>
 
         <q-btn color="app-primary" class="user-menu" flat rounded label="" no-caps>
@@ -43,20 +38,20 @@
       </q-toolbar>
     </q-header>
 
-    <q-drawer show-if-above :mini="miniState" :model-value="$q.screen.gt.sm" :width="250"
-      style="position: relative !important;" :breakpoint="500" class="bg-app-primary">
+    <q-drawer v-model="leftDrawerOpen" style="overflow-y: scroll" show-if-above :mini="miniState" :width="250"
+      :breakpoint="500" class="bg-app-primary">
 
       <q-scroll-area class="fit" style="user-select: none;">
         <q-list class="flex column" style="height: 100vh;">
           <q-item class="pt-13 flex items-center" :v-ripple="false">
             <q-item-section avatar>
-              <q-icon v-if="!miniState" size="50px" class="ml-5" name="mdi-hand-coin"></q-icon>
-              <q-icon v-if="miniState" size="25px" class="ml-5" name="mdi-hand-coin"></q-icon>
+              <q-icon v-if="!miniState" size="50px" color="app-secondary" class="ml-5" name="mdi-hand-coin"></q-icon>
+              <q-icon v-if="miniState" size="25px" color="app-secondary" class="ml-5" name="mdi-hand-coin"></q-icon>
               <q-btn v-if="miniState" color="white" flat round size="11px" @click="drawerClick">
                 <q-icon name="mdi-arrow-collapse-right" />
               </q-btn>
             </q-item-section>
-            <span v-if="!miniState" class="text-semi-bold fs-20">Rifa Admin</span>
+            <span v-if="!miniState" class="text-semi-bold text-app-secondary fs-17 mr-5">Rifa Admin</span>
             <q-item-section>
               <q-btn color="white" flat round size="11px" style="right: 10px;position: absolute;" @click="drawerClick">
                 <q-icon name="mdi-arrow-collapse-left" />
@@ -64,11 +59,11 @@
             </q-item-section>
           </q-item>
 
-          <div class="text-white q-pl-md fs-12 q-mt-md q-mb-md">
+          <div class="text-white q-pl-sm fs-12 q-mt-md q-mb-md">
             Menu
           </div>
 
-          <EssentialLink v-for="link in essentialLinks" :key="link.title" v-bind="link" />
+          <EssentialLink v-for="link in links" :key="link.title" v-bind="link" />
 
           <q-space />
 
@@ -115,7 +110,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import type { EssentialLinkProps } from '@common/components/EssentialLink.vue';
 import EssentialLink from '@common/components/EssentialLink.vue';
 import { LogoutUseCase, AuthMeUseCase } from '@modules/auth/domain/useCases';
@@ -131,46 +126,55 @@ const authStore = useAuthStore();
 const miniState = ref(false);
 const confirmLogout = ref<boolean>(false);
 const loading = ref<boolean>(false);
+const leftDrawerOpen = ref(false);
 
-const essentialLinks: EssentialLinkProps[] = [
+const adminLinks: EssentialLinkProps[] = [
   {
-    title: 'DashBoard',
-    icon: 'mdi-tab',
-    link: '/dashboard'
-  },
-  {
-    title: 'Admins',
+    title: 'Administradores',
     icon: 'mdi-shield-account',
     link: '/admins'
   },
-  /*
   {
-    title: 'Dueños',
-    icon: 'mdi-account',
-    link: '/owners'
-  },
-  */
-  {
-    title: 'Roles admin',
+    title: 'Roles de administradores',
     icon: 'mdi-lock',
     link: '/roles'
-  },
-  {
-    title: 'Roles dueños',
-    icon: 'mdi-account-lock',
-    link: '/roles/owners'
   },
   {
     title: 'Bancas',
     icon: 'mdi-bank',
     link: '/banks'
   },
+];
+
+const ownerLinks: EssentialLinkProps[] = [
+  {
+    title: 'Banca',
+    icon: 'mdi-bank',
+    link: '/banks/self'
+  },
+  {
+    title: 'Administradores',
+    icon: 'mdi-shield-account',
+    link: '/admins'
+  },
+  {
+    title: 'Roles del dueño',
+    icon: 'mdi-account-lock',
+    link: '/roles/owners'
+  },
   {
     title: 'Rifas',
     icon: 'mdi-slot-machine',
-    link: '/raffles'
+    link: '/raffles/self'
   }
 ];
+
+const links = computed(() => {
+  if (authStore.GetUser?.bankDbs) {
+    return ownerLinks
+  }
+  return adminLinks;
+});
 
 const drawerClick = (e) => {
   miniState.value = !miniState.value;
@@ -201,11 +205,13 @@ const handleAuthMe = async () => {
   catch { }
 };
 
+const toggleLeftDrawer = () => {
+  leftDrawerOpen.value = !leftDrawerOpen.value;
+}
+
 onMounted(async () => {
   await handleAuthMe();
 });
-
-
 </script>
 
 <style>

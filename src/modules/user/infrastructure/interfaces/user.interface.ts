@@ -1,22 +1,10 @@
 export interface IUser {
   id: number;
-  name: string;
+  user: string;
+  currency: string;
   email: string;
-  phone: string;
-  role?: string;
-  status?: string;
-  createdAt?: string;
-  updatedAt?: string;
-}
-
-export interface IUserSchema {
-  name: string;
-  email: string;
-  phone: string;
-}
-
-export interface IUserSchemaEdit {
-  name?: string;
-  email?: string;
-  phone?: string;
+  phone: any;
+  createdAt: number;
+  updatedAt: number;
+  deletedAt: any;
 }
