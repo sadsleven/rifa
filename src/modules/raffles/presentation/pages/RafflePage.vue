@@ -30,8 +30,40 @@
                         @click="$router.push(`/raffles/${props.row.id}/tickets`)">
                         <q-tooltip>Tickets</q-tooltip>
                     </q-btn>
-                    <q-btn v-if="!isAdmin" unelevated dense flat round color="app-primary" icon="edit"
-                        @click="editRaffle(props.row)" />
+                    <div v-if="!isAdmin" style="display: inline-block;">
+                        <q-btn-dropdown unelevated dense flat rounded color="app-primary" icon="mdi-slot-machine">
+                            <q-list>
+                                <q-item :disable="props.row.status !== 'published'" clickable v-close-popup
+                                    @click="openProcessResultsModal(props.row)">
+                                    <q-item-section>
+                                        <q-item-label>Procesar Resultados</q-item-label>
+                                    </q-item-section>
+                                </q-item>
+                                <q-item :disable="props.row.status !== 'published'" clickable v-close-popup
+                                    @click="openCancelRefundModal(props.row)">
+                                    <q-item-section>
+                                        <q-item-label>Cancelar y Reembolsar</q-item-label>
+                                    </q-item-section>
+                                </q-item>
+                                <q-separator />
+                                <q-item :disable="props.row.status !== 'draft'" clickable v-close-popup
+                                    @click="openPublishDialog(props.row)">
+                                    <q-item-section>
+                                        <q-item-label>Publicar</q-item-label>
+                                    </q-item-section>
+                                </q-item>
+                                <q-item :disable="props.row.status !== 'toPublish'" clickable v-close-popup
+                                    @click="openDraftDialog(props.row)">
+                                    <q-item-section>
+                                        <q-item-label>Convertir a Borrador</q-item-label>
+                                    </q-item-section>
+                                </q-item>
+                            </q-list>
+                        </q-btn-dropdown>
+                        <q-tooltip>Opciones de publicación</q-tooltip>
+                    </div>
+                    <q-btn :disable="props.row.status !== 'draft'" v-if="!isAdmin" unelevated dense flat round
+                        color="app-primary" icon="edit" @click="editRaffle(props.row)" />
                     <q-btn v-if="!isAdmin" unelevated dense flat round color="app-danger" icon="mdi-delete"
                         @click="deleteRaffle(props.row)" />
                 </q-td>
@@ -68,12 +100,140 @@
                 </q-card-actions>
             </q-card>
         </q-dialog>
+
+        <!-- PROCESS RESULTS MODAL -->
+        <q-dialog v-model="showProcessResultsModal" persistent>
+            <q-card style="max-width: 550px; width: 100%;">
+                <q-card-section>
+                    <div class="fs-20 text-semi-bold text-center text-black">Procesar Resultados</div>
+                </q-card-section>
+
+                <q-card-section>
+                    <q-input color="app-primary" v-model="processResultsForm.winningTicketNumber"
+                        label="Número de Ticket Ganador *" outlined dense :disable="loadingProcessResults" />
+
+                    <div class="q-mt-md">
+                        <div class="text-semi-bold q-mb-sm">Seleccionar Lugares *</div>
+                        <q-spinner v-if="loadingPlaces" color="app-primary" size="2em" />
+                        <div v-else-if="raffleDetails?.places && raffleDetails.places.length > 0">
+                            <q-checkbox v-for="place in raffleDetails.places" :key="place.id"
+                                v-model="processResultsForm.selectedPlaces" :val="place.id"
+                                :label="`Lugar ${place.place}: ${place.description}`" />
+                        </div>
+                        <div v-else class="text-grey">No hay lugares disponibles</div>
+                    </div>
+                </q-card-section>
+
+                <q-card-actions align="right">
+                    <q-btn class="br-8 py-10 " color="black" no-caps flat label="Cancelar" v-close-popup
+                        :disable="loadingProcessResults" />
+                    <q-btn class="br-8 py-10 " no-caps unelevated label="Procesar" color="app-primary"
+                        @click="handleProcessResults" :loading="loadingProcessResults"
+                        :disable="!isProcessResultsFormValid" />
+                </q-card-actions>
+            </q-card>
+        </q-dialog>
+
+        <!-- CANCEL AND REFUND MODAL -->
+        <q-dialog v-model="showCancelRefundModal" persistent>
+            <q-card style="max-width: 550px; width: 100%;">
+                <q-card-section>
+                    <div class="fs-20 text-semi-bold text-center text-black">Cancelar y Reembolsar</div>
+                </q-card-section>
+
+                <q-card-section>
+                    <q-banner class="bg-warning text-white q-mb-md">
+                        <template v-slot:avatar>
+                            <q-icon name="warning" color="white" />
+                        </template>
+                        Esta acción cancelará la rifa y reembolsará a todos los participantes.
+                    </q-banner>
+
+                    <q-input color="app-primary" v-model="cancelRefundForm.winningTicketNumber"
+                        label="Número de Ticket Ganador *" outlined dense :disable="loadingCancelRefund" />
+
+                    <div class="q-mt-md">
+                        <div class="text-semi-bold q-mb-sm">Seleccionar Lugares *</div>
+                        <q-spinner v-if="loadingPlaces" color="app-primary" size="2em" />
+                        <div v-else-if="raffleDetails?.places && raffleDetails.places.length > 0">
+                            <q-checkbox v-for="place in raffleDetails.places" :key="place.id"
+                                v-model="cancelRefundForm.selectedPlaces" :val="place.id"
+                                :label="`Lugar ${place.place}: ${place.description}`" />
+                        </div>
+                        <div v-else class="text-grey">No hay lugares disponibles</div>
+                    </div>
+                </q-card-section>
+
+                <q-card-actions align="right">
+                    <q-btn class="br-8 py-10 " color="black" no-caps flat label="Cancelar" v-close-popup
+                        :disable="loadingCancelRefund" />
+                    <q-btn class="br-8 py-10 " no-caps unelevated label="Confirmar" color="app-primary"
+                        @click="handleCancelRefund" :loading="loadingCancelRefund"
+                        :disable="!isCancelRefundFormValid" />
+                </q-card-actions>
+            </q-card>
+        </q-dialog>
+
+        <!-- PUBLISH CONFIRMATION DIALOG -->
+        <q-dialog v-model="showPublishDialog" persistent>
+            <q-card style="max-width: 450px; width: 100%;">
+                <q-card-section class="row items-center justify-center">
+                    <div class="fs-20 text-semi-bold lh-24 text-center text-black q-mt-md">
+                        ¿Estás seguro de publicar la rifa: {{ raffle?.title }}?
+                    </div>
+                </q-card-section>
+
+                <q-card-section class="row items-center justify-center no-padding">
+                    <q-icon name="publish" color="app-primary" size="70px" />
+                </q-card-section>
+
+                <q-card-actions align="center">
+                    <q-btn no-caps :disable="loadingPublish" class="q-mt-md q-mb-md br-6 text-semi-bold"
+                        style="width: 84px;" label="Cancelar" color="app-danger" v-close-popup />
+                    <q-btn no-caps :disable="loadingPublish" class="q-mt-md q-mb-md br-6 text-semi-bold"
+                        style="width: 132px;" :loading="loadingPublish" label="Publicar" color="app-primary"
+                        @click="handlePublish" />
+                </q-card-actions>
+            </q-card>
+        </q-dialog>
+
+        <!-- DRAFT CONFIRMATION DIALOG -->
+        <q-dialog v-model="showDraftDialog" persistent>
+            <q-card style="max-width: 450px; width: 100%;">
+                <q-card-section class="row items-center justify-center">
+                    <div class="fs-20 text-semi-bold lh-24 text-center text-black q-mt-md">
+                        ¿Estás seguro de convertir a borrador la rifa: {{ raffle?.title }}?
+                    </div>
+                </q-card-section>
+
+                <q-card-section class="row items-center justify-center no-padding">
+                    <q-icon name="drafts" color="app-primary" size="70px" />
+                </q-card-section>
+
+                <q-card-actions align="center">
+                    <q-btn no-caps :disable="loadingDraft" class="q-mt-md q-mb-md br-6 text-semi-bold"
+                        style="width: 84px;" label="Cancelar" color="app-danger" v-close-popup />
+                    <q-btn no-caps :disable="loadingDraft" class="q-mt-md q-mb-md br-6 text-semi-bold"
+                        style="width: 132px;" :loading="loadingDraft" label="Confirmar" color="app-primary"
+                        @click="handleDraft" />
+                </q-card-actions>
+            </q-card>
+        </q-dialog>
     </q-page>
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted } from 'vue';
-import { GetRafflesUseCase, DeleteRaffleUseCase, GetOwnerRafflesUseCase } from '@modules/raffles/domain/useCases';
+import { ref, onMounted, computed } from 'vue';
+import {
+    GetRafflesUseCase,
+    DeleteRaffleUseCase,
+    GetOwnerRafflesUseCase,
+    GetRaffleBySlugUseCase,
+    ProcessResultsUseCase,
+    CancelAndRefundUseCase,
+    ToPublishUseCase,
+    ToDraftUseCase
+} from '@modules/raffles/domain/useCases';
 import { useRouter, useRoute } from 'vue-router';
 import type { IRaffle } from '@modules/raffles/infrastructure/interfaces/raffle.interface';
 import dayjs from 'dayjs';
@@ -145,6 +305,37 @@ const pagination = ref<ITablePagination>({
     rowsPerPage: 20,
     rowsNumber: 0,
     offset: 0
+});
+
+// NEW RAFFLE MANAGEMENT REFS
+const showProcessResultsModal = ref<boolean>(false);
+const showCancelRefundModal = ref<boolean>(false);
+const showPublishDialog = ref<boolean>(false);
+const showDraftDialog = ref<boolean>(false);
+const loadingProcessResults = ref<boolean>(false);
+const loadingCancelRefund = ref<boolean>(false);
+const loadingPublish = ref<boolean>(false);
+const loadingDraft = ref<boolean>(false);
+const loadingPlaces = ref<boolean>(false);
+const raffleDetails = ref<IRaffle | null>(null);
+const processResultsForm = ref<{ winningTicketNumber: string; selectedPlaces: number[] }>({
+    winningTicketNumber: '',
+    selectedPlaces: []
+});
+const cancelRefundForm = ref<{ winningTicketNumber: string; selectedPlaces: number[] }>({
+    winningTicketNumber: '',
+    selectedPlaces: []
+});
+
+// COMPUTED
+const isProcessResultsFormValid = computed(() => {
+    return processResultsForm.value.winningTicketNumber.trim() !== '' &&
+        processResultsForm.value.selectedPlaces.length > 0;
+});
+
+const isCancelRefundFormValid = computed(() => {
+    return cancelRefundForm.value.winningTicketNumber.trim() !== '' &&
+        cancelRefundForm.value.selectedPlaces.length > 0;
 });
 
 // FUNCTIONS
@@ -242,6 +433,186 @@ const handleDeleteRaffle = async () => {
     }
 
     loadingDelete.value = false;
+};
+
+// NEW RAFFLE MANAGEMENT FUNCTIONS
+const fetchRaffleDetails = async (slug: string) => {
+    loadingPlaces.value = true;
+    try {
+        const response: any = await GetRaffleBySlugUseCase.handle(slug);
+        raffleDetails.value = response.data.data;
+    } catch (e: any) {
+        let errorMessage = t(`APIerrors.${e?.response?.data?.errorCode}`);
+        if (errorMessage.includes(e?.response?.data?.errorCode)) {
+            errorMessage = e?.response?.data?.errorMessage ?? 'Error al obtener detalles de la rifa.';
+        }
+        $q.notify({
+            ...getNotifyDefaultOptions('error'),
+            message: errorMessage
+        });
+    } finally {
+        loadingPlaces.value = false;
+    }
+};
+
+const openProcessResultsModal = async (raffleRow: IRaffle) => {
+    raffle.value = raffleRow;
+    processResultsForm.value = { winningTicketNumber: '', selectedPlaces: [] };
+    raffleDetails.value = null;
+    showProcessResultsModal.value = true;
+    await fetchRaffleDetails(raffleRow.slug);
+};
+
+const openCancelRefundModal = async (raffleRow: IRaffle) => {
+    raffle.value = raffleRow;
+    cancelRefundForm.value = { winningTicketNumber: '', selectedPlaces: [] };
+    raffleDetails.value = null;
+    showCancelRefundModal.value = true;
+    await fetchRaffleDetails(raffleRow.slug);
+};
+
+const openPublishDialog = (raffleRow: IRaffle) => {
+    raffle.value = raffleRow;
+    showPublishDialog.value = true;
+};
+
+const openDraftDialog = (raffleRow: IRaffle) => {
+    raffle.value = raffleRow;
+    showDraftDialog.value = true;
+};
+
+const handleProcessResults = async () => {
+    if (!raffle.value || !isProcessResultsFormValid.value) return;
+
+    loadingProcessResults.value = true;
+    try {
+        await ProcessResultsUseCase.handle(raffle.value.id, {
+            winningTicketNumber: processResultsForm.value.winningTicketNumber,
+            placeIds: processResultsForm.value.selectedPlaces
+        });
+        showProcessResultsModal.value = false;
+        $q.notify({
+            ...getNotifyDefaultOptions('success'),
+            message: 'Resultados procesados exitosamente.'
+        });
+        // Refresh the raffles list
+        await handleGetRaffles(
+            pagination.value.rowsPerPage,
+            pagination.value.offset,
+            pagination.value.sortBy,
+            pagination.value.descending
+        );
+    } catch (e: any) {
+        let errorMessage = t(`APIerrors.${e?.response?.data?.errorCode}`);
+        if (errorMessage.includes(e?.response?.data?.errorCode)) {
+            errorMessage = e?.response?.data?.errorMessage ?? 'Error al procesar resultados.';
+        }
+        $q.notify({
+            ...getNotifyDefaultOptions('error'),
+            message: errorMessage
+        });
+    } finally {
+        loadingProcessResults.value = false;
+    }
+};
+
+const handleCancelRefund = async () => {
+    if (!raffle.value || !isCancelRefundFormValid.value) return;
+
+    loadingCancelRefund.value = true;
+    try {
+        await CancelAndRefundUseCase.handle(raffle.value.id, {
+            winningTicketNumber: cancelRefundForm.value.winningTicketNumber,
+            placeIds: cancelRefundForm.value.selectedPlaces
+        });
+        showCancelRefundModal.value = false;
+        $q.notify({
+            ...getNotifyDefaultOptions('success'),
+            message: 'Rifa cancelada y reembolsos procesados exitosamente.'
+        });
+        // Refresh the raffles list
+        await handleGetRaffles(
+            pagination.value.rowsPerPage,
+            pagination.value.offset,
+            pagination.value.sortBy,
+            pagination.value.descending
+        );
+    } catch (e: any) {
+        let errorMessage = t(`APIerrors.${e?.response?.data?.errorCode}`);
+        if (errorMessage.includes(e?.response?.data?.errorCode)) {
+            errorMessage = e?.response?.data?.errorMessage ?? 'Error al cancelar y reembolsar.';
+        }
+        $q.notify({
+            ...getNotifyDefaultOptions('error'),
+            message: errorMessage
+        });
+    } finally {
+        loadingCancelRefund.value = false;
+    }
+};
+
+const handlePublish = async () => {
+    if (!raffle.value) return;
+
+    loadingPublish.value = true;
+    try {
+        await ToPublishUseCase.handle(raffle.value.id);
+        showPublishDialog.value = false;
+        $q.notify({
+            ...getNotifyDefaultOptions('success'),
+            message: 'Rifa publicada exitosamente.'
+        });
+        // Refresh the raffles list
+        await handleGetRaffles(
+            pagination.value.rowsPerPage,
+            pagination.value.offset,
+            pagination.value.sortBy,
+            pagination.value.descending
+        );
+    } catch (e: any) {
+        let errorMessage = t(`APIerrors.${e?.response?.data?.errorCode}`);
+        if (errorMessage.includes(e?.response?.data?.errorCode)) {
+            errorMessage = e?.response?.data?.errorMessage ?? 'Error al publicar la rifa.';
+        }
+        $q.notify({
+            ...getNotifyDefaultOptions('error'),
+            message: errorMessage
+        });
+    } finally {
+        loadingPublish.value = false;
+    }
+};
+
+const handleDraft = async () => {
+    if (!raffle.value) return;
+
+    loadingDraft.value = true;
+    try {
+        await ToDraftUseCase.handle(raffle.value.id);
+        showDraftDialog.value = false;
+        $q.notify({
+            ...getNotifyDefaultOptions('success'),
+            message: 'Rifa convertida a borrador exitosamente.'
+        });
+        // Refresh the raffles list
+        await handleGetRaffles(
+            pagination.value.rowsPerPage,
+            pagination.value.offset,
+            pagination.value.sortBy,
+            pagination.value.descending
+        );
+    } catch (e: any) {
+        let errorMessage = t(`APIerrors.${e?.response?.data?.errorCode}`);
+        if (errorMessage.includes(e?.response?.data?.errorCode)) {
+            errorMessage = e?.response?.data?.errorMessage ?? 'Error al convertir a borrador.';
+        }
+        $q.notify({
+            ...getNotifyDefaultOptions('error'),
+            message: errorMessage
+        });
+    } finally {
+        loadingDraft.value = false;
+    }
 };
 
 // LIFECYCLE HOOKS

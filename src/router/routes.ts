@@ -162,7 +162,7 @@ const routes: RouteRecordRaw[] = [
           import('@modules/raffles/presentation/pages/CreateRafflePage.vue'),
       },
       {
-        path: '/raffles/edit/:id',
+        path: '/raffles/edit/:slug',
         component: () =>
           import('@modules/raffles/presentation/pages/EditRafflePage.vue'),
       },

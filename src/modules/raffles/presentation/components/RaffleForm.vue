@@ -310,8 +310,8 @@
 import { reactive, ref, onMounted } from 'vue';
 import { QForm, useQuasar } from 'quasar';
 import { CreateRaffleUseCase, EditRaffleUseCase } from '@modules/raffles/domain/useCases';
-import { useRouter, useRoute } from 'vue-router';
-import type { IRaffle, IRafflePlace, IRaffleQuickPurchase } from '@modules/raffles/infrastructure/interfaces/raffle.interface';
+import { useRouter } from 'vue-router';
+import type { IRaffle, IRaffleQuickPurchase } from '@modules/raffles/infrastructure/interfaces/raffle.interface';
 import { getNotifyDefaultOptions } from 'app/src/common/helpers/notify-default-options.helper';
 import { useI18n } from 'vue-i18n';
 import dayjs from 'dayjs';
@@ -323,7 +323,6 @@ dayjs.extend(customParseFormat)
 const { t } = useI18n()
 const $q = useQuasar();
 const $router = useRouter();
-const $route = useRoute();
 const validate = CreateRaffleUseCase.validateAt;
 const validatePlace = CreateRaffleUseCase.validatePlaceAt;
 const validateQP = CreateRaffleUseCase.validateQuickPurchaseAt;
@@ -378,8 +377,8 @@ const props = defineProps({
     default: false,
     required: false,
   },
-  raffleId: {
-    type: Number,
+  raffleSlug: {
+    type: String,
     required: false,
   }
 });
@@ -513,9 +512,9 @@ const handleUploadRaffle = async () => {
     }
   }
   else {
-    if (!props.raffleId) return;
+    if (!raffle.value?.id) return;
     try {
-      await EditRaffleUseCase.handle(formRaffle, props.raffleId);
+      await EditRaffleUseCase.handle(formRaffle, raffle.value?.id);
       $q.notify({
         ...getNotifyDefaultOptions('success'),
         message: 'Rifa editada exitosamente.'

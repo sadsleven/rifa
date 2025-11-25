@@ -151,4 +151,120 @@ export class RaffleGateway {
       retryCondition: tokenExpired,
     });
   }
+
+  static async getRaffleBySlug(
+    slug: string,
+    token: string,
+    store: PiniaStore
+  ) {
+    const options: AxiosRequestConfig = {
+      ...setBasePath(
+        {
+          url: this.routes.getRaffleBySlugOwner.url(slug),
+          method: this.routes.getRaffleBySlugOwner.method,
+        },
+        this.basePath
+      ),
+    };
+
+    return HTTP.request<{ data: IRaffle }>({
+      config: options,
+      token,
+      retries: 2,
+      onCatchError: refreshTokenAndRetry(store),
+      retryCondition: tokenExpired,
+    });
+  }
+
+  static async processResults(
+    id: number,
+    data: { winningTicketNumber: string; placeIds: number[] },
+    token: string,
+    store: PiniaStore
+  ) {
+    const options: AxiosRequestConfig = {
+      ...setBasePath(
+        {
+          url: this.routes.processResults.url(id),
+          method: this.routes.processResults.method,
+        },
+        this.basePath
+      ),
+      data,
+    };
+
+    return HTTP.request<{ data: { message: string; messageCode: string } }>({
+      config: options,
+      token,
+      retries: 2,
+      onCatchError: refreshTokenAndRetry(store),
+      retryCondition: tokenExpired,
+    });
+  }
+
+  static async cancelAndRefund(
+    id: number,
+    data: { winningTicketNumber: string; placeIds: number[] },
+    token: string,
+    store: PiniaStore
+  ) {
+    const options: AxiosRequestConfig = {
+      ...setBasePath(
+        {
+          url: this.routes.cancelAndRefund.url(id),
+          method: this.routes.cancelAndRefund.method,
+        },
+        this.basePath
+      ),
+      data,
+    };
+
+    return HTTP.request<{ data: { message: string; messageCode: string } }>({
+      config: options,
+      token,
+      retries: 2,
+      onCatchError: refreshTokenAndRetry(store),
+      retryCondition: tokenExpired,
+    });
+  }
+
+  static async toPublish(id: number, token: string, store: PiniaStore) {
+    const options: AxiosRequestConfig = {
+      ...setBasePath(
+        {
+          url: this.routes.toPublish.url(id),
+          method: this.routes.toPublish.method,
+        },
+        this.basePath
+      ),
+    };
+
+    return HTTP.request<{ data: { message: string; messageCode: string } }>({
+      config: options,
+      token,
+      retries: 2,
+      onCatchError: refreshTokenAndRetry(store),
+      retryCondition: tokenExpired,
+    });
+  }
+
+  static async toDraft(id: number, token: string, store: PiniaStore) {
+    const options: AxiosRequestConfig = {
+      ...setBasePath(
+        {
+          url: this.routes.toDraft.url(id),
+          method: this.routes.toDraft.method,
+        },
+        this.basePath
+      ),
+    };
+
+    return HTTP.request<{ data: { message: string; messageCode: string } }>({
+      config: options,
+      token,
+      retries: 2,
+      onCatchError: refreshTokenAndRetry(store),
+      retryCondition: tokenExpired,
+    });
+  }
 }

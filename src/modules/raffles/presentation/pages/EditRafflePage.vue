@@ -3,7 +3,7 @@
     <h1 class="fs-25 no-margin">
       Editar rifa
     </h1>
-    <RaffleForm :is-update="true" :raffle-id="+$route.params.id" />
+    <RaffleForm :is-update="true" :raffle-slug="`${$route.params.slug}`" />
   </q-page>
 </template>
 

@@ -4,3 +4,8 @@ export * from './edit-raffle.useCase';
 export * from './delete-raffle.useCase';
 export * from './get-owner-raffles.useCase';
 export * from './get-tickets.useCase';
+export * from './get-raffle-by-slug.useCase';
+export * from './process-results.useCase';
+export * from './cancel-and-refund.useCase';
+export * from './to-publish.useCase';
+export * from './to-draft.useCase';

@@ -33,6 +33,22 @@ const raffleRoutes = {
     url: (id: number) => `raffles/${id}/tickets`,
     method: 'GET',
   },
+  processResults: {
+    url: (id: number) => `owner/raffles/${id}/process-results`,
+    method: 'PATCH',
+  },
+  cancelAndRefund: {
+    url: (id: number) => `owner/raffles/${id}/cancel-and-refound`,
+    method: 'PATCH',
+  },
+  toPublish: {
+    url: (id: number) => `owner/raffles/${id}/to-publish`,
+    method: 'PATCH',
+  },
+  toDraft: {
+    url: (id: number) => `owner/raffles/${id}/to-draft`,
+    method: 'PATCH',
+  },
 };
 
 export type Route = Pick<AxiosRequestConfig, 'url' | 'method'>;
