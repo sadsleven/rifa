@@ -155,7 +155,7 @@ const ownerLinks: EssentialLinkProps[] = [
   {
     title: 'Administradores',
     icon: 'mdi-shield-account',
-    link: '/admins'
+    link: '/admins/owners'
   },
   {
     title: 'Roles del dueño',
@@ -165,7 +165,7 @@ const ownerLinks: EssentialLinkProps[] = [
   {
     title: 'Rifas',
     icon: 'mdi-slot-machine',
-    link: '/raffles/self'
+    link: '/raffles'
   }
 ];
 

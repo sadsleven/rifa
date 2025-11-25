@@ -82,6 +82,11 @@ const routes: RouteRecordRaw[] = [
           import('@modules/admin/presentation/pages/AdminPage.vue'),
       },
       {
+        path: '/admins/owners',
+        component: () =>
+          import('@modules/admin/presentation/pages/AdminPage.vue'),
+      },
+      {
         path: '/admins/create',
         component: () =>
           import('@modules/admin/presentation/pages/CreateAdminPage.vue'),
@@ -107,6 +112,11 @@ const routes: RouteRecordRaw[] = [
           import('@modules/bank/presentation/pages/BankPage.vue'),
       },
       {
+        path: '/banks/self',
+        component: () =>
+          import('@modules/bank/presentation/pages/BankPage.vue'),
+      },
+      {
         path: '/banks/create',
         component: () =>
           import('@modules/bank/presentation/pages/CreateBankPage.vue'),
@@ -127,22 +137,32 @@ const routes: RouteRecordRaw[] = [
           import('@modules/user/presentation/pages/UserPage.vue'),
       },
       {
-        path: '/banks/admin/:dbs/raffles',
-        component: () =>
-          import('@modules/raffles/presentation/pages/RafflePage.vue'),
-      },
-      {
         path: '/banks/:dbs/raffles',
         component: () =>
           import('@modules/raffles/presentation/pages/RafflePage.vue'),
       },
+    ],
+    meta: {
+      requiresAuth: true,
+    },
+  },
+
+  {
+    path: '/raffles',
+    component: () => import('@common/layouts/MainLayout.vue'),
+    children: [
       {
-        path: '/banks/:dbs/raffles/create',
+        path: '/raffles',
+        component: () =>
+          import('@modules/raffles/presentation/pages/RafflePage.vue'),
+      },
+      {
+        path: 'raffles/create',
         component: () =>
           import('@modules/raffles/presentation/pages/CreateRafflePage.vue'),
       },
       {
-        path: '/banks/:dbs/raffles/edit/:id',
+        path: 'raffles/edit/:id',
         component: () =>
           import('@modules/raffles/presentation/pages/EditRafflePage.vue'),
       },

@@ -72,12 +72,41 @@
       </div>
 
     </q-form>
+
+    <q-dialog v-model="confirmCreation" persistent>
+      <q-card style="max-width: 450px; width: 100%;">
+        <q-card-section class="row items-center justify-center">
+          <div class="fs-20 text-semi-bold lh-24 text-center text-black q-mt-md">Administrador {{ formAdmin.name }}
+            creado
+            exitosamente</div>
+        </q-card-section>
+
+        <q-card-section class="row items-center text-center  justify-center q-px-lg q-pb-none">
+          <div>
+            Aca puedes copiar la contraseña del administrador y luego cerrar este modal
+          </div>
+          <div class="text-app-primary q-mt-md">
+            {{ passwordUser }}
+          </div>
+          <q-btn round flat icon="content_copy" color="app-primary" class="q-ml-sm q-mt-md"
+            @click="copyToClipboard(passwordUser)">
+
+            <q-tooltip>Copiar contraseña</q-tooltip>
+          </q-btn>
+        </q-card-section>
+
+        <q-card-actions align="center">
+          <q-btn no-caps class="q-mt-md q-mb-md br-6 text-semi-bold " style="width: 132px;" label="Aceptar"
+            color="app-primary" :disable="!passwordCopied" @click="$router.back()" />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { reactive, ref, onMounted } from 'vue';
-import { QForm, useQuasar } from 'quasar';
+import { QForm, useQuasar, copyToClipboard as copy } from 'quasar';
 import { CreateAdminUseCase, EditAdminUseCase, GetAdminByIdUseCase, AssignRoleToAdminUseCase } from '@modules/admin/domain/useCases';
 import { GetRolesUseCase } from '@modules/roles/domain/useCases';
 import { useRouter } from 'vue-router';
@@ -97,6 +126,9 @@ const loading = ref<boolean>(false);
 const admin = ref<IAdmin | null>(null);
 const loadingAdmin = ref<boolean>(false);
 const roleOptions = ref<{ id: number; name: string }[]>([]);
+const confirmCreation = ref<boolean>(false);
+const passwordUser = ref<string>('');
+const passwordCopied = ref<boolean>(false);
 
 // REACTIVE
 const formAdmin = reactive({
@@ -132,12 +164,8 @@ const handleUploadAdmin = async () => {
         await AssignRoleToAdminUseCase.handle(formAdmin.roles, response?.data?.data?.args?.id);
       }
 
-      $q.notify({
-        ...getNotifyDefaultOptions('success'),
-        message: `Admin creado exitosamente, la contraseña es: "${response?.data?.data?.args?.pass}".`,
-        timeout: 0
-      })
-      await $router.push('/admins');
+      passwordUser.value = response?.data?.data?.args?.pass
+      confirmCreation.value = true
     }
     catch (e: any) {
       let errorMessage = t(`APIerrors.${e?.response?.data?.errorCode}`);
@@ -232,6 +260,22 @@ const getRoles = async () => {
     })
   }
 };
+
+const copyToClipboard = async (text: string) => {
+  passwordCopied.value = true
+  try {
+    await copy(text)
+    $q.notify({
+      ...getNotifyDefaultOptions('success'),
+      message: 'Contraseña copiada al portapapeles'
+    })
+  } catch {
+    $q.notify({
+      ...getNotifyDefaultOptions('error'),
+      message: 'Error al copiar la contraseña'
+    })
+  }
+}
 
 // LIFECYCLE HOOKS
 onMounted(async () => {

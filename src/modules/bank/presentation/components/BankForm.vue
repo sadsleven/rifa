@@ -112,12 +112,42 @@
       </div>
 
     </q-form>
+
+    <q-dialog v-model="confirmCreation" persistent>
+      <q-card style="max-width: 450px; width: 100%;">
+        <q-card-section class="row items-center justify-center">
+          <div class="fs-20 text-semi-bold lh-24 text-center text-black q-mt-md">Banca {{ formBank.name }} y dueño de
+            banca {{ formBank.owner.name }}
+            creados
+            exitosamente</div>
+        </q-card-section>
+
+        <q-card-section class="row items-center text-center  justify-center q-px-lg q-pb-none">
+          <div>
+            Aca puedes copiar la contraseña del dueño y luego cerrar este modal
+          </div>
+          <div class="text-app-primary q-mt-md">
+            {{ passwordUser }}
+          </div>
+          <q-btn round flat icon="content_copy" color="app-primary" class="q-ml-sm q-mt-md"
+            @click="copyToClipboard(passwordUser)">
+
+            <q-tooltip>Copiar contraseña</q-tooltip>
+          </q-btn>
+        </q-card-section>
+
+        <q-card-actions align="center">
+          <q-btn no-caps class="q-mt-md q-mb-md br-6 text-semi-bold " style="width: 132px;" label="Aceptar"
+            color="app-primary" :disable="!passwordCopied" @click="$router.back()" />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { reactive, ref, onMounted } from 'vue';
-import { QForm, useQuasar } from 'quasar';
+import { QForm, useQuasar, copyToClipboard as copy } from 'quasar';
 import { CreateBankUseCase, EditBankUseCase, GetBankBySlugUseCase } from '@modules/bank/domain/useCases';
 import { useRouter } from 'vue-router';
 import type { IBank } from '@modules/bank/infrastructure/interfaces/bank.interface';
@@ -136,6 +166,9 @@ const formRef = ref<QForm | null>(null);
 const loading = ref<boolean>(false);
 const bank = ref<IBank | null>(null);
 const loadingBank = ref<boolean>(false);
+const confirmCreation = ref<boolean>(false);
+const passwordUser = ref<string>('');
+const passwordCopied = ref<boolean>(false);
 
 // REACTIVE
 const formBank = reactive({
@@ -181,13 +214,8 @@ const handleUploadBank = async () => {
       }
       const response: any = await CreateBankUseCase.handle(formBank);
 
-      $q.notify({
-        ...getNotifyDefaultOptions('success'),
-        message: `Banca creada exitosamente, la contraseña del dueño es: "${response?.data?.data?.args?.ownerPassword}".`,
-        timeout: 0
-      })
-
-      await $router.push('/banks');
+      passwordUser.value = response?.data?.data?.args?.ownerPassword
+      confirmCreation.value = true
     }
     catch (e: any) {
       let errorMessage = t(`APIerrors.${e?.response?.data?.errorCode}`);
@@ -237,6 +265,22 @@ const handleUploadBank = async () => {
 
   loading.value = false;
 };
+
+const copyToClipboard = async (text: string) => {
+  passwordCopied.value = true
+  try {
+    await copy(text)
+    $q.notify({
+      ...getNotifyDefaultOptions('success'),
+      message: 'Contraseña copiada al portapapeles'
+    })
+  } catch {
+    $q.notify({
+      ...getNotifyDefaultOptions('error'),
+      message: 'Error al copiar la contraseña'
+    })
+  }
+}
 
 const handleGetBank = async () => {
   if (!props.bankSlug) return;
