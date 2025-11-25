@@ -5,7 +5,9 @@ import type {
 } from '../interfaces/raffle.interface';
 import { HTTP } from '@common/services';
 import type { AxiosRequestConfig } from 'axios';
-import raffleRoutes, { setBasePath } from '@modules/raffles/infrastructure/routes';
+import raffleRoutes, {
+  setBasePath,
+} from '@modules/raffles/infrastructure/routes';
 import configuration from '@config/configuration';
 import { tokenExpired } from '@common/utils';
 import type { PiniaStore } from '@modules/auth/domain/store/types';
@@ -41,20 +43,31 @@ export class RaffleGateway {
     });
   }
 
+  static async getRafflesOwner(
+    token: string,
+    store: PiniaStore,
+    query: string = ''
+  ) {
+    const options: AxiosRequestConfig = {
+      ...setBasePath(this.routes.getRafflesOwner, this.basePath, query),
+    };
+
+    return HTTP.request<{ data: IRaffle[] }>({
+      config: options,
+      token,
+      retries: 2,
+      onCatchError: refreshTokenAndRetry(store),
+      retryCondition: tokenExpired,
+    });
+  }
+
   static async createRaffle(
-    dbs: string,
     data: IRaffleSchema,
     token: string,
     store: PiniaStore
   ) {
     const options: AxiosRequestConfig = {
-      ...setBasePath(
-        {
-          url: this.routes.createRaffle.url(dbs),
-          method: this.routes.createRaffle.method,
-        },
-        this.basePath
-      ),
+      ...setBasePath(this.routes.createRaffleOwner, this.basePath),
       data,
     };
 
@@ -68,7 +81,6 @@ export class RaffleGateway {
   }
 
   static async editRaffle(
-    dbs: string,
     data: IRaffleSchemaEdit,
     id: number,
     token: string,
@@ -77,8 +89,8 @@ export class RaffleGateway {
     const options: AxiosRequestConfig = {
       ...setBasePath(
         {
-          url: this.routes.updateRaffle.url(dbs, id),
-          method: this.routes.updateRaffle.method,
+          url: this.routes.updateRaffleOwner.url(id),
+          method: this.routes.updateRaffleOwner.method,
         },
         this.basePath
       ),
@@ -94,17 +106,12 @@ export class RaffleGateway {
     });
   }
 
-  static async deleteRaffle(
-    dbs: string,
-    id: number,
-    token: string,
-    store: PiniaStore
-  ) {
+  static async deleteRaffle(id: number, token: string, store: PiniaStore) {
     const options: AxiosRequestConfig = {
       ...setBasePath(
         {
-          url: this.routes.deleteRaffle.url(dbs, id),
-          method: this.routes.deleteRaffle.method,
+          url: this.routes.deleteRaffleOwner.url(id),
+          method: this.routes.deleteRaffleOwner.method,
         },
         this.basePath
       ),

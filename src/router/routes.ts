@@ -114,7 +114,7 @@ const routes: RouteRecordRaw[] = [
       {
         path: '/banks/self',
         component: () =>
-          import('@modules/bank/presentation/pages/BankPage.vue'),
+          import('@modules/bank/presentation/pages/BankSelfPage.vue'),
       },
       {
         path: '/banks/create',
@@ -157,12 +157,12 @@ const routes: RouteRecordRaw[] = [
           import('@modules/raffles/presentation/pages/RafflePage.vue'),
       },
       {
-        path: 'raffles/create',
+        path: '/raffles/create',
         component: () =>
           import('@modules/raffles/presentation/pages/CreateRafflePage.vue'),
       },
       {
-        path: 'raffles/edit/:id',
+        path: '/raffles/edit/:id',
         component: () =>
           import('@modules/raffles/presentation/pages/EditRafflePage.vue'),
       },

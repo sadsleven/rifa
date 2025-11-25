@@ -324,7 +324,6 @@ const { t } = useI18n()
 const $q = useQuasar();
 const $router = useRouter();
 const $route = useRoute();
-const dbs = $route.params.dbs as string;
 const validate = CreateRaffleUseCase.validateAt;
 const validatePlace = CreateRaffleUseCase.validatePlaceAt;
 const validateQP = CreateRaffleUseCase.validateQuickPurchaseAt;
@@ -493,12 +492,12 @@ const handleUploadRaffle = async () => {
         delete element.lotteryTime;
       });
 
-      await CreateRaffleUseCase.handle(dbs, payload);
+      await CreateRaffleUseCase.handle(payload);
       $q.notify({
         ...getNotifyDefaultOptions('success'),
         message: 'Rifa creada exitosamente.'
       })
-      await $router.push(`/banks/${dbs}/raffles`);
+      await $router.push('/raffles');
     }
     catch (e: any) {
       let errorMessage = t(`APIerrors.${e?.response?.data?.errorCode}`);
@@ -516,12 +515,12 @@ const handleUploadRaffle = async () => {
   else {
     if (!props.raffleId) return;
     try {
-      await EditRaffleUseCase.handle(dbs, formRaffle, props.raffleId);
+      await EditRaffleUseCase.handle(formRaffle, props.raffleId);
       $q.notify({
         ...getNotifyDefaultOptions('success'),
         message: 'Rifa editada exitosamente.'
       })
-      await $router.push(`/banks/${dbs}/raffles`);
+      await $router.push('/raffles');
     }
     catch (e: any) {
       let errorMessage = t(`APIerrors.${e?.response?.data?.errorCode}`);
@@ -546,7 +545,7 @@ onMounted(async () => {
     // Pre-fill quick purchases with some defaults if creating new
     if (formRaffle.quickPurchases.length === 0) {
       const defaults = [
-        { minTickets: 5, discountPercentage: 0 },
+        { minTickets: 4, discountPercentage: 0 },
         { minTickets: 10, discountPercentage: 0 },
         { minTickets: 20, discountPercentage: 0 },
         { minTickets: 50, discountPercentage: 5 },

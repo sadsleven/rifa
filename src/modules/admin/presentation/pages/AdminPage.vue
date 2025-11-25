@@ -87,6 +87,7 @@ const { t } = useI18n()
 const $q = useQuasar();
 const $router = useRouter();
 const authStore = useAuthStore();
+const isOwner = authStore.GetUser?.bankDbs
 const columns: any = [
     { name: 'name', align: 'left', label: 'Nombre', field: 'name', sortable: false },
 
@@ -136,8 +137,10 @@ const handleGetAdmins = async (limit, offset, sort, sortOrder) => {
     const sortOrderFilter = sortOrder ? 'desc' : 'asc';
     const sortFilter = sort ? `&sort[${sort}]=${sortOrderFilter.toUpperCase()}` : '';
 
+    const filterByDbs = isOwner ? `&filter[banksDbs][]=${authStore.GetUser?.bankDbs}` : ''
+
     const query = `?pagination[limit]=${limit}&pagination[offset]=${offset < 0 ? 0 : offset
-        }${sortFilter}`
+        }${sortFilter}${filterByDbs}`
 
     try {
         const response: any = await GetAdminsUseCase.handle(query);

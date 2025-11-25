@@ -10,17 +10,17 @@ import { ZodError } from 'zod';
 import { RaffleGateway } from '@modules/raffles/infrastructure/gateways/raffle.gateway';
 import { useAuthStore } from '@modules/auth/domain/store';
 
-export class DeleteRaffleUseCase {
+export class GetOwnerRafflesUseCase {
   @DefaultCatch(defaultCatchError)
   @Catch(AxiosError, axiosCatchError)
   @Catch(ZodError, zodCatchError)
-  static async handle(id: number) {
+  static async handle(query: string = '') {
     const authStore = useAuthStore();
 
-    const result = await RaffleGateway.deleteRaffle(
-      id,
+    const result = await RaffleGateway.getRafflesOwner(
       authStore.GetToken,
-      authStore
+      authStore,
+      query
     );
     return result;
   }

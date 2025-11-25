@@ -9,16 +9,24 @@ const raffleRoutes = {
     url: (dbs: string, slug: string) => `admin/banks/${dbs}/raffles/${slug}`,
     method: 'GET',
   },
-  createRaffle: {
-    url: (dbs: string) => `admin/banks/${dbs}/raffles`,
+  getRafflesOwner: {
+    url: 'owner/raffles',
+    method: 'GET',
+  },
+  getRaffleBySlugOwner: {
+    url: (slug: string) => `owner/raffles/${slug}`,
+    method: 'GET',
+  },
+  createRaffleOwner: {
+    url: 'owner/raffles',
     method: 'POST',
   },
-  updateRaffle: {
-    url: (dbs: string, id: number) => `admin/banks/${dbs}/raffles/${id}`,
+  updateRaffleOwner: {
+    url: (id: number) => `owner/raffles/${id}`,
     method: 'PATCH',
   },
-  deleteRaffle: {
-    url: (dbs: string, id: number) => `admin/banks/${dbs}/raffles/${id}`,
+  deleteRaffleOwner: {
+    url: (id: number) => `owner/raffles/${id}`,
     method: 'DELETE',
   },
 };

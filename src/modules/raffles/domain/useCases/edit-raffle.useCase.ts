@@ -10,8 +10,16 @@ import { DefaultCatch } from '@common/decorators/default-catch.decorator';
 import { ZodError } from 'zod';
 import { RaffleGateway } from '@modules/raffles/infrastructure/gateways/raffle.gateway';
 import { useAuthStore } from '@modules/auth/domain/store';
-import type { IRaffleSchema, IRafflePlaceSchema, IRaffleQuickPurchaseSchema } from '@modules/raffles/presentation/schemas';
-import { RaffleSchema, RafflePlaceSchema, RaffleQuickPurchaseSchema } from '@modules/raffles/presentation/schemas';
+import type {
+  IRaffleSchema,
+  IRafflePlaceSchema,
+  IRaffleQuickPurchaseSchema,
+} from '@modules/raffles/presentation/schemas';
+import {
+  RaffleSchema,
+  RafflePlaceSchema,
+  RaffleQuickPurchaseSchema,
+} from '@modules/raffles/presentation/schemas';
 
 export class EditRaffleUseCase {
   static validateAt(property: keyof Partial<IRaffleSchema>) {
@@ -22,7 +30,9 @@ export class EditRaffleUseCase {
     return validationAt(RafflePlaceSchema)(property);
   }
 
-  static validateQuickPurchaseAt(property: keyof Partial<IRaffleQuickPurchaseSchema>) {
+  static validateQuickPurchaseAt(
+    property: keyof Partial<IRaffleQuickPurchaseSchema>
+  ) {
     return validationAt(RaffleQuickPurchaseSchema)(property);
   }
 
@@ -33,11 +43,10 @@ export class EditRaffleUseCase {
   @DefaultCatch(defaultCatchError)
   @Catch(AxiosError, axiosCatchError)
   @Catch(ZodError, zodCatchError)
-  static async handle(dbs: string, data: IRaffleSchema, id: number) {
+  static async handle(data: IRaffleSchema, id: number) {
     const authStore = useAuthStore();
 
     const result = await RaffleGateway.editRaffle(
-      dbs,
       data,
       id,
       authStore.GetToken,

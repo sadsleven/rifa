@@ -1,9 +1,12 @@
 <template>
     <q-page class="q-pa-lg">
-        <div class="row items-center q-mb-md">
+        <div v-if="isAdmin" class="row items-center q-mb-md">
             <q-btn flat round icon="arrow_back" color="app-primary" @click="$router.push('/banks')" />
             <span class="fs-20 text-bold text-black q-ml-sm">Rifas de la Banca: {{ dbs }}</span>
         </div>
+        <h1 v-else class="fs-25 no-margin">
+            Rifas de la Banca: {{ dbs }}
+        </h1>
         <q-table binary-state-sort @request="onRequest" v-model:pagination="pagination" loading-label="Cargando"
             :rows="raffles" :columns="columns" flat :loading="loading || loadingPagination" row-key="id"
             style="width: 100%;" :rows-per-page-options="[10, 15, 20, 30]"
@@ -14,8 +17,7 @@
                 <q-btn v-if="!isAdmin" unelevated :class="{
                     'fs-14 q-mb-md': $q.screen.width < 1065 && $q.screen.width > 800,
                     'full-width': $q.screen.width < 1065,
-                }" class="text-medium br-6" no-caps @click="$router.push(`/banks/${dbs}/raffles/create`)"
-                    color="app-primary">
+                }" class="text-medium br-6" no-caps @click="$router.push(`/raffles/create`)" color="app-primary">
                     <q-icon name="add" size="18px" class="q-pr-sm" />
                     Crear rifa
                 </q-btn>
@@ -66,7 +68,7 @@
 
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue';
-import { GetRafflesUseCase, DeleteRaffleUseCase } from '@modules/raffles/domain/useCases';
+import { GetRafflesUseCase, DeleteRaffleUseCase, GetOwnerRafflesUseCase } from '@modules/raffles/domain/useCases';
 import { useRouter, useRoute } from 'vue-router';
 import type { IRaffle } from '@modules/raffles/infrastructure/interfaces/raffle.interface';
 import dayjs from 'dayjs';
@@ -75,12 +77,14 @@ import { paginationHelper } from 'app/src/common/helpers/pagination-set-helper';
 import { useI18n } from 'vue-i18n'
 import { useQuasar } from 'quasar';
 import { getNotifyDefaultOptions } from 'app/src/common/helpers/notify-default-options.helper';
+import { useAuthStore } from 'app/src/modules/auth/domain/store';
 
 const { t } = useI18n()
 const $q = useQuasar();
 const $router = useRouter();
 const $route = useRoute();
-const dbs = $route.params.dbs as string;
+const authStore = useAuthStore();
+const dbs = $route.params.dbs as string ?? authStore.GetUser?.bankDbs ?? '';
 const isAdmin = $route.path.includes('/banks/admin')
 
 const columns: any = [
@@ -150,7 +154,7 @@ const handleGetRaffles = async (limit, offset, sort, sortOrder) => {
         }${sortFilter}`
 
     try {
-        const response: any = await GetRafflesUseCase.handle(dbs, query);
+        const response: any = isAdmin ? await GetRafflesUseCase.handle(dbs, query) : await GetOwnerRafflesUseCase.handle(query);
         raffles.value = response.data.data;
         pagination.value.rowsNumber = response.data.pagination.total;
         pagination.value.rowsPerPage = response.data.pagination.limit;
@@ -199,7 +203,7 @@ function onRequest(paginationProps) {
 }
 
 const editRaffle = async (raffleRow) => {
-    await $router.push({ path: `/banks/${dbs}/raffles/edit/${raffleRow.id}` });
+    await $router.push({ path: `/raffles/edit/${raffleRow.id}` });
 };
 
 const deleteRaffle = (raffleRow) => {
@@ -211,7 +215,7 @@ const handleDeleteRaffle = async () => {
     loadingDelete.value = true;
 
     try {
-        await DeleteRaffleUseCase.handle(dbs, raffle.value.id);
+        await DeleteRaffleUseCase.handle(raffle.value.id);
         raffles.value = raffles.value.filter(r => r.id !== raffle.value.id);
         confirmDelete.value = false;
         $q.notify({
