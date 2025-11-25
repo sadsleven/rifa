@@ -18,7 +18,7 @@ const adminRoutes = {
     method: 'PATCH',
   },
   deleteAdmin: {
-    url: (id: number) => `admin/admins/${id}`,
+    url: (id: number) => `admin/admins/${id}/soft`,
     method: 'DELETE',
   },
   updateAdminRoles: {

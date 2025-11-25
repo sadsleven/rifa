@@ -37,7 +37,7 @@
                         @click="$router.push(`/banks/${props.row.dbs}/users`)">
                         <q-tooltip>Usuarios</q-tooltip>
                     </q-btn>
-                    <q-btn unelevated dense flat round color="app-primary" icon="confirmation_number"
+                    <q-btn unelevated dense flat round color="app-primary" icon="mdi-slot-machine"
                         @click="$router.push(`/banks/admin/${props.row.dbs}/raffles`)">
                         <q-tooltip>Rifas</q-tooltip>
                     </q-btn>

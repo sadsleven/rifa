@@ -26,8 +26,13 @@
             <!-- ACTIONS COLUMN -->
             <template v-slot:body-cell-actions="props">
                 <q-td :props="props">
-                    <q-btn unelevated dense flat round color="app-primary" icon="edit" @click="editRaffle(props.row)" />
-                    <q-btn unelevated dense flat round color="app-danger" icon="mdi-delete"
+                    <q-btn unelevated dense flat round color="app-primary" icon="confirmation_number"
+                        @click="$router.push(`/raffles/${props.row.id}/tickets`)">
+                        <q-tooltip>Tickets</q-tooltip>
+                    </q-btn>
+                    <q-btn v-if="!isAdmin" unelevated dense flat round color="app-primary" icon="edit"
+                        @click="editRaffle(props.row)" />
+                    <q-btn v-if="!isAdmin" unelevated dense flat round color="app-danger" icon="mdi-delete"
                         @click="deleteRaffle(props.row)" />
                 </q-td>
             </template>
@@ -123,7 +128,7 @@ const columns: any = [
             : 'No aplica'
             }`
     },
-    !isAdmin ? { name: 'actions', align: 'left', label: 'Acciones' } : {}
+    { name: 'actions', align: 'left', label: 'Acciones' }
 ];
 
 // REFS

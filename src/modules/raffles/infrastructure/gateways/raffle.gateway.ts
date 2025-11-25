@@ -125,4 +125,30 @@ export class RaffleGateway {
       retryCondition: tokenExpired,
     });
   }
+
+  static async getTickets(
+    id: number,
+    token: string,
+    store: PiniaStore,
+    query: string = ''
+  ) {
+    const options: AxiosRequestConfig = {
+      ...setBasePath(
+        {
+          url: this.routes.getTickets.url(id),
+          method: this.routes.getTickets.method,
+        },
+        this.basePath,
+        query
+      ),
+    };
+
+    return HTTP.request<{ data: any[] }>({
+      config: options,
+      token,
+      retries: 2,
+      onCatchError: refreshTokenAndRetry(store),
+      retryCondition: tokenExpired,
+    });
+  }
 }

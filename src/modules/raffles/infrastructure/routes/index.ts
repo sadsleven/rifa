@@ -29,6 +29,10 @@ const raffleRoutes = {
     url: (id: number) => `owner/raffles/${id}`,
     method: 'DELETE',
   },
+  getTickets: {
+    url: (id: number) => `raffles/${id}/tickets`,
+    method: 'GET',
+  },
 };
 
 export type Route = Pick<AxiosRequestConfig, 'url' | 'method'>;

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <q-form class="self-end flex column wp-100 hp-60-vh" ref="formRef" greedy @submit="handleUploadRole">
+    <q-form class="self-end flex column wp-100" ref="formRef" greedy @submit="handleUploadRole">
       <div class="row">
         <div class="col-12 col-md-6 q-pa-md">
           <span class="fs-14 text-black">

@@ -394,7 +394,7 @@ const addPlace = () => {
     lotteryAt: '',
     lotteryTime: '',
     description: '',
-    imgUrls: [''] // Initialize with one empty string to show input
+    imgUrls: ['']
   });
 };
 
@@ -542,7 +542,6 @@ const handleUploadRaffle = async () => {
 // LIFECYCLE HOOKS
 onMounted(async () => {
   if (!props.isUpdate) {
-    // Pre-fill quick purchases with some defaults if creating new
     if (formRaffle.quickPurchases.length === 0) {
       const defaults = [
         { minTickets: 4, discountPercentage: 0 },
@@ -554,7 +553,6 @@ onMounted(async () => {
       ];
       formRaffle.quickPurchases.push(...defaults);
     }
-    // Pre-fill one place
     addPlace();
   }
   if (props.isUpdate) {

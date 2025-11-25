@@ -137,7 +137,7 @@ const routes: RouteRecordRaw[] = [
           import('@modules/user/presentation/pages/UserPage.vue'),
       },
       {
-        path: '/banks/:dbs/raffles',
+        path: '/banks/admin/:dbs/raffles',
         component: () =>
           import('@modules/raffles/presentation/pages/RafflePage.vue'),
       },
@@ -165,6 +165,11 @@ const routes: RouteRecordRaw[] = [
         path: '/raffles/edit/:id',
         component: () =>
           import('@modules/raffles/presentation/pages/EditRafflePage.vue'),
+      },
+      {
+        path: '/raffles/:id/tickets',
+        component: () =>
+          import('@modules/raffles/presentation/pages/TicketPage.vue'),
       },
     ],
     meta: {
