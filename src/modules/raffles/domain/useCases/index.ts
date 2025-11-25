@@ -9,3 +9,6 @@ export * from './process-results.useCase';
 export * from './cancel-and-refund.useCase';
 export * from './to-publish.useCase';
 export * from './to-draft.useCase';
+export * from './update-quick-purchase.useCase';
+export * from './add-place.useCase';
+export * from './update-place.useCase';

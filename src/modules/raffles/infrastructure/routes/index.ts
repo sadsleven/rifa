@@ -49,6 +49,18 @@ const raffleRoutes = {
     url: (id: number) => `owner/raffles/${id}/to-draft`,
     method: 'PATCH',
   },
+  updateQuickPurchaseOwner: {
+    url: (id: number, quickPurchaseId: number) => `owner/raffles/${id}/quick-purchases/${quickPurchaseId}`,
+    method: 'PUT',
+  },
+  addPlaceOwner: {
+    url: (id: number) => `owner/raffles/${id}/places`,
+    method: 'POST',
+  },
+  updatePlaceOwner: {
+    url: (id: number, placeId: number) => `owner/raffles/${id}/places/${placeId}`,
+    method: 'PUT',
+  },
 };
 
 export type Route = Pick<AxiosRequestConfig, 'url' | 'method'>;

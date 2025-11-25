@@ -33,14 +33,16 @@ export interface IRaffle {
   status: string;
   mainImgUrl: string | null;
   imgUrls: string[];
-  startDate: string;
-  endDate: string;
+  startDate: number;
+  endDate: number;
   ticketDigits: number;
   ticketAvailable: number;
   totalTicketsSold?: number | null;
   currency: string;
   ticketPrice: number;
   places?: IRafflePlace[];
+  quickPurchases?: IRaffleQuickPurchase[];
+  discounts?: IRaffleQuickPurchase[];
   createdAt?: string;
   updatedAt?: string;
 }

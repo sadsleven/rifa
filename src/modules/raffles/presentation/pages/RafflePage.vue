@@ -399,7 +399,7 @@ function onRequest(paginationProps) {
 }
 
 const editRaffle = async (raffleRow) => {
-    await $router.push({ path: `/raffles/edit/${raffleRow.id}` });
+    await $router.push({ path: `/raffles/edit/${raffleRow.slug}` });
 };
 
 const deleteRaffle = (raffleRow) => {

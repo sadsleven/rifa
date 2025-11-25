@@ -309,9 +309,9 @@
 <script lang="ts" setup>
 import { reactive, ref, onMounted } from 'vue';
 import { QForm, useQuasar } from 'quasar';
-import { CreateRaffleUseCase, EditRaffleUseCase } from '@modules/raffles/domain/useCases';
+import { CreateRaffleUseCase, EditRaffleUseCase, GetRaffleBySlugUseCase, UpdateQuickPurchaseUseCase, AddPlaceUseCase, UpdatePlaceUseCase } from '@modules/raffles/domain/useCases';
 import { useRouter } from 'vue-router';
-import type { IRaffle, IRaffleQuickPurchase } from '@modules/raffles/infrastructure/interfaces/raffle.interface';
+import type { IRaffle } from '@modules/raffles/infrastructure/interfaces/raffle.interface';
 import { getNotifyDefaultOptions } from 'app/src/common/helpers/notify-default-options.helper';
 import { useI18n } from 'vue-i18n';
 import dayjs from 'dayjs';
@@ -368,8 +368,11 @@ const formRaffle = reactive({
   currency: 'VES',
   assignmentType: 'increment',
   places: [] as any[],
-  quickPurchases: [] as IRaffleQuickPurchase[]
+  quickPurchases: [] as any[]
 });
+
+const originalPlaceIds = ref<Map<number, number>>(new Map());
+const originalQuickPurchaseIds = ref<Map<number, number>>(new Map());
 
 const props = defineProps({
   isUpdate: {
@@ -399,7 +402,6 @@ const addPlace = () => {
 
 const removePlace = (index: number) => {
   formRaffle.places.splice(index, 1);
-  // Re-index places
   formRaffle.places.forEach((p, i) => p.place = i + 1);
 };
 
@@ -430,14 +432,12 @@ const removeImgUrl = (index: number) => {
   formRaffle.imgUrls.splice(index, 1);
 };
 
-// FUNCTIONS
 const handleUploadRaffle = async () => {
-  // Custom validation
   if (formRaffle.places.length === 0) {
     $q.notify({ ...getNotifyDefaultOptions('error'), message: 'Debe agregar al menos un lugar.' });
     return;
   }
-  // Validate each place has at least one image
+
   for (let i = 0; i < formRaffle.places.length; i++) {
     if (formRaffle.places[i].imgUrls.length === 0) {
       $q.notify({ ...getNotifyDefaultOptions('error'), message: `El lugar #${i + 1} debe tener al menos una imagen.` });
@@ -450,7 +450,7 @@ const handleUploadRaffle = async () => {
     return;
   }
 
-  // Clean up empty strings from imgUrls
+
   formRaffle.imgUrls = formRaffle.imgUrls.filter(url => url.trim() !== '');
   formRaffle.places.forEach(place => {
     place.imgUrls = place.imgUrls.filter((url: string) => url.trim() !== '');
@@ -514,7 +514,53 @@ const handleUploadRaffle = async () => {
   else {
     if (!raffle.value?.id) return;
     try {
-      await EditRaffleUseCase.handle(formRaffle, raffle.value?.id);
+
+      const payload: any = { ...formRaffle };
+      const isoDateTimeStart = dayjs(
+        `${formRaffle.startDate} ${formRaffle.startTime}`,
+        'DD/MM/YYYY HH:mm'
+      ).toISOString();
+
+      const isoDateTimeEnd = dayjs(
+        `${formRaffle.endDate} ${formRaffle.endTime}`,
+        'DD/MM/YYYY HH:mm'
+      ).toISOString();
+
+      payload.startDate = isoDateTimeStart;
+      payload.endDate = isoDateTimeEnd;
+      delete payload.startTime;
+      delete payload.endTime;
+      delete payload.places;
+      delete payload.quickPurchases;
+
+      await EditRaffleUseCase.handle(payload, raffle.value?.id);
+
+
+      for (let i = 0; i < formRaffle.places.length; i++) {
+        const place = { ...formRaffle.places[i] };
+        const isoDateTimePlace = dayjs(
+          `${place.lotteryAt} ${place.lotteryTime}`,
+          'DD/MM/YYYY HH:mm'
+        ).toISOString();
+        place.lotteryAt = isoDateTimePlace;
+        delete place.lotteryTime;
+
+        const placeId = originalPlaceIds.value.get(i);
+        if (placeId) {
+          await UpdatePlaceUseCase.handle(raffle.value.id, placeId, place);
+        } else {
+          await AddPlaceUseCase.handle(raffle.value.id, place);
+        }
+      }
+
+      for (let i = 0; i < formRaffle.quickPurchases.length; i++) {
+        const qp = formRaffle.quickPurchases[i];
+        const qpId = originalQuickPurchaseIds.value.get(i);
+        if (qpId) {
+          await UpdateQuickPurchaseUseCase.handle(raffle.value.id, qpId, qp);
+        }
+      }
+
       $q.notify({
         ...getNotifyDefaultOptions('success'),
         message: 'Rifa editada exitosamente.'
@@ -538,6 +584,79 @@ const handleUploadRaffle = async () => {
   loading.value = false;
 };
 
+const handleGetRaffle = async () => {
+  if (!props.raffleSlug) return;
+  loadingRaffle.value = true;
+
+  try {
+    const response = await GetRaffleBySlugUseCase.handle(props.raffleSlug);
+    if (response && response.data) {
+      raffle.value = response.data.data;
+
+      formRaffle.title = raffle.value.title;
+      formRaffle.description = raffle.value.description;
+      formRaffle.mainImgUrl = raffle.value.mainImgUrl || '';
+      formRaffle.imgUrls = raffle.value.imgUrls || [];
+      formRaffle.ticketDigits = raffle.value.ticketDigits;
+      formRaffle.ticketPrice = Number(raffle.value.ticketPrice);
+      formRaffle.currency = raffle.value.currency;
+
+      const startDate = dayjs.unix(raffle.value.startDate);
+      formRaffle.startDate = startDate.format('DD/MM/YYYY');
+      formRaffle.startTime = startDate.format('HH:mm');
+
+      const endDate = dayjs.unix(raffle.value.endDate);
+      formRaffle.endDate = endDate.format('DD/MM/YYYY');
+      formRaffle.endTime = endDate.format('HH:mm');
+
+      if (raffle.value.places && raffle.value.places.length > 0) {
+        formRaffle.places = raffle.value.places.map((place, index) => {
+          if (place.id) {
+            originalPlaceIds.value.set(index, place.id);
+          }
+
+          const lotteryDate = dayjs.unix(Number(place.lotteryAt));
+          return {
+            place: place.place,
+            rewardsYes: place.rewardsYes,
+            type: place.type || 'physical',
+            amount: Number(place.amount) || 1,
+            lotteryAt: lotteryDate.format('DD/MM/YYYY'),
+            lotteryTime: lotteryDate.format('HH:mm'),
+            description: place.description || '',
+            imgUrls: place.imgUrls || ['']
+          };
+        });
+      }
+
+      if (raffle.value.discounts && raffle.value.discounts.length > 0) {
+        formRaffle.quickPurchases = raffle.value.discounts.map((qp: any, index) => {
+          if (qp.id) {
+            originalQuickPurchaseIds.value.set(index, qp.id);
+          }
+          return {
+            minTickets: qp.minTickets,
+            discountPercentage: Number(qp.discountPercentage)
+          };
+        });
+      }
+    }
+  }
+  catch (e: any) {
+    let errorMessage = t(`APIerrors.${e?.response?.data?.errorCode}`);
+
+    if (errorMessage.includes(e?.response?.data?.errorCode)) {
+      errorMessage = e?.response?.data?.errorMessage ?? 'Ha ocurrido un error inesperado.';
+    }
+
+    $q.notify({
+      ...getNotifyDefaultOptions('error'),
+      message: errorMessage
+    })
+  }
+  loadingRaffle.value = false;
+};
+
 // LIFECYCLE HOOKS
 onMounted(async () => {
   if (!props.isUpdate) {
@@ -555,7 +674,7 @@ onMounted(async () => {
     addPlace();
   }
   if (props.isUpdate) {
-    // await handleGetRaffle();
+    await handleGetRaffle();
   }
 });
 

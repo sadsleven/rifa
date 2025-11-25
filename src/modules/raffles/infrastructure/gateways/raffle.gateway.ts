@@ -2,6 +2,8 @@ import type {
   IRaffle,
   IRaffleSchema,
   IRaffleSchemaEdit,
+  IRaffleQuickPurchase,
+  IRafflePlace,
 } from '../interfaces/raffle.interface';
 import { HTTP } from '@common/services';
 import type { AxiosRequestConfig } from 'axios';
@@ -257,6 +259,86 @@ export class RaffleGateway {
         },
         this.basePath
       ),
+    };
+
+    return HTTP.request<{ data: { message: string; messageCode: string } }>({
+      config: options,
+      token,
+      retries: 2,
+      onCatchError: refreshTokenAndRetry(store),
+      retryCondition: tokenExpired,
+    });
+  }
+
+  static async updateQuickPurchase(
+    raffleId: number,
+    quickPurchaseId: number,
+    data: IRaffleQuickPurchase,
+    token: string,
+    store: PiniaStore
+  ) {
+    const options: AxiosRequestConfig = {
+      ...setBasePath(
+        {
+          url: this.routes.updateQuickPurchaseOwner.url(raffleId, quickPurchaseId),
+          method: this.routes.updateQuickPurchaseOwner.method,
+        },
+        this.basePath
+      ),
+      data,
+    };
+
+    return HTTP.request<{ data: { message: string; messageCode: string } }>({
+      config: options,
+      token,
+      retries: 2,
+      onCatchError: refreshTokenAndRetry(store),
+      retryCondition: tokenExpired,
+    });
+  }
+
+  static async addPlace(
+    raffleId: number,
+    data: IRafflePlace,
+    token: string,
+    store: PiniaStore
+  ) {
+    const options: AxiosRequestConfig = {
+      ...setBasePath(
+        {
+          url: this.routes.addPlaceOwner.url(raffleId),
+          method: this.routes.addPlaceOwner.method,
+        },
+        this.basePath
+      ),
+      data,
+    };
+
+    return HTTP.request<{ data: { message: string; messageCode: string } }>({
+      config: options,
+      token,
+      retries: 2,
+      onCatchError: refreshTokenAndRetry(store),
+      retryCondition: tokenExpired,
+    });
+  }
+
+  static async updatePlace(
+    raffleId: number,
+    placeId: number,
+    data: IRafflePlace,
+    token: string,
+    store: PiniaStore
+  ) {
+    const options: AxiosRequestConfig = {
+      ...setBasePath(
+        {
+          url: this.routes.updatePlaceOwner.url(raffleId, placeId),
+          method: this.routes.updatePlaceOwner.method,
+        },
+        this.basePath
+      ),
+      data,
     };
 
     return HTTP.request<{ data: { message: string; messageCode: string } }>({
