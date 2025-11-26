@@ -154,11 +154,33 @@ export class RaffleGateway {
     });
   }
 
-  static async getRaffleBySlug(
-    slug: string,
+  static async getTopTen(
+    id: number,
     token: string,
-    store: PiniaStore
+    store: PiniaStore,
+    query: string = ''
   ) {
+    const options: AxiosRequestConfig = {
+      ...setBasePath(
+        {
+          url: this.routes.getTopTen.url(id),
+          method: this.routes.getTopTen.method,
+        },
+        this.basePath,
+        query
+      ),
+    };
+
+    return HTTP.request<{ data: any[] }>({
+      config: options,
+      token,
+      retries: 2,
+      onCatchError: refreshTokenAndRetry(store),
+      retryCondition: tokenExpired,
+    });
+  }
+
+  static async getRaffleBySlug(slug: string, token: string, store: PiniaStore) {
     const options: AxiosRequestConfig = {
       ...setBasePath(
         {
@@ -280,7 +302,10 @@ export class RaffleGateway {
     const options: AxiosRequestConfig = {
       ...setBasePath(
         {
-          url: this.routes.updateQuickPurchaseOwner.url(raffleId, quickPurchaseId),
+          url: this.routes.updateQuickPurchaseOwner.url(
+            raffleId,
+            quickPurchaseId
+          ),
           method: this.routes.updateQuickPurchaseOwner.method,
         },
         this.basePath

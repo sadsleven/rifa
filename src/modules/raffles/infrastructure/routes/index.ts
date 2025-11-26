@@ -30,7 +30,11 @@ const raffleRoutes = {
     method: 'DELETE',
   },
   getTickets: {
-    url: (id: number) => `raffles/${id}/tickets`,
+    url: (id: number) => `owner/raffles/${id}/tickets`,
+    method: 'GET',
+  },
+  getTopTen: {
+    url: (id: number) => `owner/raffles/${id}/top-ten`,
     method: 'GET',
   },
   processResults: {
@@ -50,7 +54,8 @@ const raffleRoutes = {
     method: 'PATCH',
   },
   updateQuickPurchaseOwner: {
-    url: (id: number, quickPurchaseId: number) => `owner/raffles/${id}/quick-purchases/${quickPurchaseId}`,
+    url: (id: number, quickPurchaseId: number) =>
+      `owner/raffles/${id}/quick-purchases/${quickPurchaseId}`,
     method: 'PUT',
   },
   addPlaceOwner: {
@@ -58,7 +63,8 @@ const raffleRoutes = {
     method: 'POST',
   },
   updatePlaceOwner: {
-    url: (id: number, placeId: number) => `owner/raffles/${id}/places/${placeId}`,
+    url: (id: number, placeId: number) =>
+      `owner/raffles/${id}/places/${placeId}`,
     method: 'PUT',
   },
 };

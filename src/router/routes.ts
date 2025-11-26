@@ -33,6 +33,21 @@ const routes: RouteRecordRaw[] = [
   },
 
   {
+    path: '/profile',
+    component: () => import('@common/layouts/MainLayout.vue'),
+    children: [
+      {
+        path: '/profile',
+        component: () =>
+          import('@modules/auth/presentation/pages/ProfilePage.vue'),
+      },
+    ],
+    meta: {
+      requiresAuth: true,
+    },
+  },
+
+  {
     path: '/roles',
     component: () => import('@common/layouts/MainLayout.vue'),
     children: [
@@ -157,9 +172,14 @@ const routes: RouteRecordRaw[] = [
           import('@modules/raffles/presentation/pages/EditRafflePage.vue'),
       },
       {
-        path: '/raffles/:id/tickets',
+        path: '/raffles/info/:slug',
         component: () =>
-          import('@modules/raffles/presentation/pages/TicketPage.vue'),
+          import('@modules/raffles/presentation/pages/RaffleInfoPage.vue'),
+      },
+      {
+        path: '/raffles/info/:slug/:dbs',
+        component: () =>
+          import('@modules/raffles/presentation/pages/RaffleInfoPage.vue'),
       },
     ],
     meta: {

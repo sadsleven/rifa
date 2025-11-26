@@ -4,7 +4,7 @@
             <span class="fs-20 text-bold text-black q-ml-sm">Rifas</span>
         </div>
         <h1 v-else class="fs-25 no-margin">
-            Rifas de la Banca: {{ dbs }}
+            Rifas
         </h1>
         <q-table binary-state-sort @request="onRequest" v-model:pagination="pagination" loading-label="Cargando"
             :rows="raffles" :columns="columns" flat :loading="loading || loadingPagination" row-key="id"
@@ -26,7 +26,7 @@
             <template v-slot:body-cell-actions="props">
                 <q-td :props="props">
                     <q-btn unelevated dense flat round color="app-primary" icon="mdi-eye"
-                        @click="$router.push(`/raffles/${props.row.id}/tickets`)">
+                        @click="$router.push(`/raffles/info/${props.row.slug}${isAdmin ? '/' + dbs : ''}`)">
                         <q-tooltip>Ver</q-tooltip>
                     </q-btn>
                     <div v-if="!isAdmin" style="display: inline-block;">

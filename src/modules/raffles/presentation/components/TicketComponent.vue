@@ -1,8 +1,7 @@
 <template>
-    <div class="full-width column q-pa-lg">
+    <div class="full-width">
         <div class="row items-center q-mb-md">
-            <q-btn flat round icon="arrow_back" color="black" @click="$router.back()" />
-            <span class="fs-20 text-black text-bold q-ml-sm">Tickets de la Rifa: {{ raffleId }}</span>
+            <span class="fs-20 text-black text-bold q-ml-sm">Tickets</span>
         </div>
         <q-table binary-state-sort @request="onRequest" v-model:pagination="pagination" loading-label="Cargando"
             :rows="tickets" :columns="columns" flat :loading="loading || loadingPagination" row-key="id"
@@ -24,41 +23,69 @@
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue';
 import { GetRafflesTicketsUseCase } from '@modules/raffles/domain/useCases';
-import { useRoute, useRouter } from 'vue-router';
 import type { ITicket } from '@modules/raffles/infrastructure/interfaces/ticket.interface';
 import dayjs from 'dayjs';
-import type { ITablePagination } from 'app/src/common/interfaces';
-import { paginationHelper } from 'app/src/common/helpers/pagination-set-helper';
+import type { ITablePagination } from '@common/interfaces';
+import { paginationHelper } from '@common/helpers/pagination-set-helper';
 import { useI18n } from 'vue-i18n'
 import { useQuasar } from 'quasar';
-import { getNotifyDefaultOptions } from 'app/src/common/helpers/notify-default-options.helper';
+import { getNotifyDefaultOptions } from '@common/helpers/notify-default-options.helper';
+import { getStatus, GetAwardedPlace } from '@common/helpers/raffle-status-and-place.helper';
+
+const props = defineProps({
+    raffleId: {
+        type: Number,
+        required: true,
+    }
+});
 
 const { t } = useI18n()
 const $q = useQuasar();
-const $route = useRoute();
-const $router = useRouter();
-const raffleId = $route.params.id as string;
 
 const columns: any = [
-    { name: 'number', align: 'left', label: 'Número', field: 'number', sortable: false },
+    { name: 'ticketNumber', align: 'left', label: 'Nro. ticket', field: 'ticketNumber', sortable: false },
+    { name: 'user', align: 'left', label: 'Usuario', field: 'user', sortable: false },
     {
-        name: 'status', align: 'left', label: 'Estatus', sortable: true,
+        name: 'price', align: 'left', label: 'Precio', sortable: false,
         field: row => row,
-        format: val => `${val.status
-            ? t(`ticketStatus.${val.status}`)
+        format: val => `${val.price} ${val.currency}`
+    },
+    {
+        name: 'percentageDiscount', align: 'left', label: '% de desc.', sortable: false,
+        field: row => row,
+        format: val => `${Number(val.percentageDiscount)} %`
+    },
+    {
+        name: 'discount', align: 'left', label: 'Descuento', sortable: false,
+        field: row => row,
+        format: val => `${val.discount} ${val.currency}`
+    },
+    {
+        name: 'finalPrice', align: 'left', label: 'Precio final', sortable: false,
+        field: row => row,
+        format: val => `${val.finalPrice} ${val.currency}`
+    },
+    {
+        name: 'status', align: 'left', label: 'Estado', sortable: false,
+        field: row => row,
+        format: val => `${val.resultsPlaces?.length
+            ? getStatus(val)
+            : 'Pendiente'
+            }`
+    },
+    {
+        name: 'place', align: 'left', label: 'Lugar', sortable: false,
+        field: row => row,
+        format: val => `${val.resultsPlaces?.length && getStatus(val) === 'Ganador'
+            ? GetAwardedPlace(val)
             : '-'
             }`
     },
     {
-        name: 'buyer', align: 'left', label: 'Comprador', sortable: false,
+        name: 'saleAt', align: 'left', label: 'Fecha', sortable: true,
         field: row => row,
-        format: val => `${val.buyer?.name ? val.buyer.name : '-'}`
-    },
-    {
-        name: 'purchaseDate', align: 'left', label: 'Fecha de Compra', sortable: true,
-        field: row => row,
-        format: val => `${val.purchaseDate
-            ? dayjs.unix(val.purchaseDate).format('DD-MM-YYYY HH:mm')
+        format: val => `${val.saleAt
+            ? dayjs(val.saleAt, 'YYYY-MM-DD HH:mm:ss').format('DD/MM/YYYY h:mm A')
             : '-'
             }`
     },
@@ -89,7 +116,7 @@ const handleGetTickets = async (limit, offset, sort, sortOrder) => {
         }${sortFilter}`
 
     try {
-        const response: any = await GetRafflesTicketsUseCase.handle(Number(raffleId), query);
+        const response: any = await GetRafflesTicketsUseCase.handle(Number(props.raffleId), query);
         tickets.value = response.data.data;
         pagination.value.rowsNumber = response.data.pagination.total;
         pagination.value.rowsPerPage = response.data.pagination.limit;
@@ -139,7 +166,7 @@ function onRequest(paginationProps) {
 
 // LIFECYCLE HOOKS
 onMounted(async () => {
-    if (raffleId) {
+    if (props.raffleId) {
         await handleGetTickets(
             pagination.value.rowsPerPage,
             0,

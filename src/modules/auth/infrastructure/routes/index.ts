@@ -21,6 +21,46 @@ const authRoutes = {
     url: 'auth/owner/me',
     method: 'GET',
   },
+  changePassword: {
+    url: 'auth/admin/me/change-password',
+    method: 'PATCH',
+  },
+  changePasswordOwner: {
+    url: 'auth/owner/me/change-password',
+    method: 'PATCH',
+  },
+  requestEmailChange: {
+    url: 'auth/admin/me/change-email',
+    method: 'PUT',
+  },
+  requestEmailChangeOwner: {
+    url: 'auth/owner/me/change-email',
+    method: 'PUT',
+  },
+  confirmEmailChange: {
+    url: 'auth/admin/me/change-email',
+    method: 'PATCH',
+  },
+  confirmEmailChangeOwner: {
+    url: 'auth/owner/me/change-email',
+    method: 'PATCH',
+  },
+  requestPhoneChange: {
+    url: 'auth/admin/me/change-phone',
+    method: 'PUT',
+  },
+  requestPhoneChangeOwner: {
+    url: 'auth/owner/me/change-phone',
+    method: 'PUT',
+  },
+  confirmPhoneChange: {
+    url: 'auth/admin/me/change-phone',
+    method: 'PATCH',
+  },
+  confirmPhoneChangeOwner: {
+    url: 'auth/owner/me/change-phone',
+    method: 'PATCH',
+  },
 };
 
 export type Route = Pick<AxiosRequestConfig, 'url' | 'method'>;

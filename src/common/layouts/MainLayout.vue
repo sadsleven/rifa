@@ -22,6 +22,14 @@
           <q-icon name="mdi-chevron-down" color="black" size="24px" />
           <q-menu fit anchor="bottom right" self="top right">
             <q-list style="min-width: 100px">
+              <q-item color="app-primary" clickable v-close-popup @click="$router.push('/profile')">
+                <q-item-section avatar>
+                  <q-icon color="app-primary" name="mdi-account-circle" />
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label class="text-app-primary">Perfil</q-item-label>
+                </q-item-section>
+              </q-item>
               <q-item color="app-primary" clickable v-close-popup @click="confirmLogout = true">
                 <q-item-section avatar>
                   <q-icon color="app-primary" name="mdi-logout" />

@@ -168,7 +168,7 @@
       <div class="row q-mt-md">
         <div class="col-12 q-pa-md">
           <div class="row items-center justify-between">
-            <span class="fs-16 text-bold text-black">Lugares (Premios)</span>
+            <span class="fs-16 text-bold text-black">Lugares</span>
             <q-btn round dense flat color="primary" icon="add" @click="addPlace" />
           </div>
           <div v-for="(place, index) in formRaffle.places" :key="index" class="q-pa-sm q-mb-sm bg-grey-1 br-8">

@@ -51,4 +51,94 @@ export class AuthGateway {
       retryCondition: tokenExpired,
     });
   }
+
+  static async changePassword(data: { currentPassword: string; password: string; confirmPassword: string }, token: string, store: PiniaStore) {
+    const options: AxiosRequestConfig = {
+      ...setBasePath(
+        store.raUser.bankDbs ? this.routes.changePasswordOwner : this.routes.changePassword,
+        this.basePath
+      ),
+      data,
+    };
+
+    return HTTP.request<{ data: { message: string; messageCode: string } }>({
+      config: options,
+      token,
+      retries: 2,
+      onCatchError: refreshTokenAndRetry(store),
+      retryCondition: tokenExpired,
+    });
+  }
+
+  static async requestEmailChange(data: { email: string }, token: string, store: PiniaStore) {
+    const options: AxiosRequestConfig = {
+      ...setBasePath(
+        store.raUser.bankDbs ? this.routes.requestEmailChangeOwner : this.routes.requestEmailChange,
+        this.basePath
+      ),
+      data,
+    };
+
+    return HTTP.request<{ data: { message: string; messageCode: string } }>({
+      config: options,
+      token,
+      retries: 2,
+      onCatchError: refreshTokenAndRetry(store),
+      retryCondition: tokenExpired,
+    });
+  }
+
+  static async confirmEmailChange(data: { email: string; code: string }, token: string, store: PiniaStore) {
+    const options: AxiosRequestConfig = {
+      ...setBasePath(
+        store.raUser.bankDbs ? this.routes.confirmEmailChangeOwner : this.routes.confirmEmailChange,
+        this.basePath
+      ),
+      data,
+    };
+
+    return HTTP.request<{ data: { message: string; messageCode: string } }>({
+      config: options,
+      token,
+      retries: 2,
+      onCatchError: refreshTokenAndRetry(store),
+      retryCondition: tokenExpired,
+    });
+  }
+
+  static async requestPhoneChange(data: { phone: string }, token: string, store: PiniaStore) {
+    const options: AxiosRequestConfig = {
+      ...setBasePath(
+        store.raUser.bankDbs ? this.routes.requestPhoneChangeOwner : this.routes.requestPhoneChange,
+        this.basePath
+      ),
+      data,
+    };
+
+    return HTTP.request<{ data: { message: string; messageCode: string } }>({
+      config: options,
+      token,
+      retries: 2,
+      onCatchError: refreshTokenAndRetry(store),
+      retryCondition: tokenExpired,
+    });
+  }
+
+  static async confirmPhoneChange(data: { phone: string; code: string }, token: string, store: PiniaStore) {
+    const options: AxiosRequestConfig = {
+      ...setBasePath(
+        store.raUser.bankDbs ? this.routes.confirmPhoneChangeOwner : this.routes.confirmPhoneChange,
+        this.basePath
+      ),
+      data,
+    };
+
+    return HTTP.request<{ data: { message: string; messageCode: string } }>({
+      config: options,
+      token,
+      retries: 2,
+      onCatchError: refreshTokenAndRetry(store),
+      retryCondition: tokenExpired,
+    });
+  }
 }

@@ -39,6 +39,7 @@ export interface IRaffle {
   ticketAvailable: number;
   totalTicketsSold?: number | null;
   currency: string;
+  assignmentType: string;
   ticketPrice: number;
   places?: IRafflePlace[];
   quickPurchases?: IRaffleQuickPurchase[];

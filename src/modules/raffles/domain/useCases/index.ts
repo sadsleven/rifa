@@ -12,3 +12,4 @@ export * from './to-draft.useCase';
 export * from './update-quick-purchase.useCase';
 export * from './add-place.useCase';
 export * from './update-place.useCase';
+export * from './get-top-ten.useCase';
