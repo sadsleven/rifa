@@ -100,7 +100,14 @@ const columns: any = [
             }`
     },
     { name: 'email', align: 'left', label: 'Email', field: 'email', sortable: false },
-    { name: 'phone', align: 'left', label: 'Teléfono', field: 'phone', sortable: false },
+    {
+        name: 'phone', align: 'left', label: 'Teléfono', sortable: false,
+        field: row => row,
+        format: val => `${val.phone
+            ? val.phone
+            : 'No aplica'
+            }`
+    },
     {
         name: 'createdAt', align: 'left', label: 'Creado el', sortable: true,
         field: row => row,
@@ -140,7 +147,7 @@ const handleGetAdmins = async (limit, offset, sort, sortOrder) => {
     const filterByDbs = isOwner ? `&filter[banksDbs][]=${authStore.GetUser?.bankDbs}` : ''
 
     const query = `?pagination[limit]=${limit}&pagination[offset]=${offset < 0 ? 0 : offset
-        }${sortFilter}${filterByDbs}`
+        }${sortFilter}${filterByDbs}&filter[onlyAdmins]=true`
 
     try {
         const response: any = await GetAdminsUseCase.handle(query);

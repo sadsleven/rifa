@@ -33,6 +33,38 @@ const adminRoutes = {
     url: (id: number) => `admin/admins/${id}/disabled`,
     method: 'PATCH',
   },
+  getAdminsOwner: {
+    url: 'owner/admins',
+    method: 'GET',
+  },
+  getAdminByIdOwner: {
+    url: (id: number) => `owner/admins/${id}`,
+    method: 'GET',
+  },
+  createAdminOwner: {
+    url: 'owner/admins',
+    method: 'POST',
+  },
+  updateAdminOwner: {
+    url: (id: number) => `owner/admins/${id}`,
+    method: 'PATCH',
+  },
+  deleteAdminOwner: {
+    url: (id: number) => `owner/admins/${id}/soft`,
+    method: 'DELETE',
+  },
+  updateAdminRolesOwner: {
+    url: (id: number) => `owner/admins/${id}/roles`,
+    method: 'PATCH',
+  },
+  enableAdminOwner: {
+    url: (id: number) => `owner/admins/${id}/enabled`,
+    method: 'PATCH',
+  },
+  disableAdminOwner: {
+    url: (id: number) => `owner/admins/${id}/disabled`,
+    method: 'PATCH',
+  },
 };
 
 export type Route = Pick<AxiosRequestConfig, 'url' | 'method'>;

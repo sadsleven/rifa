@@ -127,19 +127,9 @@ const routes: RouteRecordRaw[] = [
           import('@modules/bank/presentation/pages/EditBankPage.vue'),
       },
       {
-        path: '/banks/:dbs/admins',
+        path: '/banks/info/:slug',
         component: () =>
-          import('@modules/admin/presentation/pages/AdminBanksPage.vue'),
-      },
-      {
-        path: '/banks/:dbs/users',
-        component: () =>
-          import('@modules/user/presentation/pages/UserPage.vue'),
-      },
-      {
-        path: '/banks/admin/:dbs/raffles',
-        component: () =>
-          import('@modules/raffles/presentation/pages/RafflePage.vue'),
+          import('@modules/bank/presentation/pages/BankInfoPage.vue'),
       },
     ],
     meta: {

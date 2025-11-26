@@ -1,8 +1,7 @@
 <template>
-    <div class="full-width column q-pa-lg">
+    <div class="wp-100">
         <div class="row items-center q-mb-md">
-            <q-btn flat round icon="arrow_back" color="black" @click="$router.back()" />
-            <span class="fs-20 text-black text-bold q-ml-sm">Usuarios de la Banca: {{ dbs }}</span>
+            <span class="fs-20 text-black text-bold q-ml-sm">Usuarios</span>
         </div>
         <q-table binary-state-sort @request="onRequest" v-model:pagination="pagination" loading-label="Cargando"
             :rows="users" :columns="columns" flat :loading="loading || loadingPagination" row-key="id"
@@ -24,7 +23,6 @@
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue';
 import { GetUsersUseCase } from '@modules/user/domain/useCases';
-import { useRoute, useRouter } from 'vue-router';
 import type { IUser } from '@modules/user/infrastructure/interfaces/user.interface';
 import dayjs from 'dayjs';
 import type { ITablePagination } from 'app/src/common/interfaces';
@@ -33,11 +31,15 @@ import { useI18n } from 'vue-i18n'
 import { useQuasar } from 'quasar';
 import { getNotifyDefaultOptions } from 'app/src/common/helpers/notify-default-options.helper';
 
+const props = defineProps({
+    dbs: {
+        type: String,
+        required: true,
+    }
+});
+
 const { t } = useI18n()
 const $q = useQuasar();
-const $route = useRoute();
-const $router = useRouter();
-const dbs = $route.params.dbs as string;
 
 const columns: any = [
     { name: 'user', align: 'left', label: 'Usuario', field: 'user', sortable: false },
@@ -86,7 +88,7 @@ const handleGetUsers = async (limit, offset, sort, sortOrder) => {
         }${sortFilter}`
 
     try {
-        const response: any = await GetUsersUseCase.handle(dbs, query);
+        const response: any = await GetUsersUseCase.handle(props.dbs, query);
         users.value = response.data.data;
         pagination.value.rowsNumber = response.data.pagination.total;
         pagination.value.rowsPerPage = response.data.pagination.limit;
@@ -136,7 +138,7 @@ function onRequest(paginationProps) {
 
 // LIFECYCLE HOOKS
 onMounted(async () => {
-    if (dbs) {
+    if (props.dbs) {
         await handleGetUsers(
             pagination.value.rowsPerPage,
             0,

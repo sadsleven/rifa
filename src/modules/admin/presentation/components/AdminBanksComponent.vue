@@ -1,8 +1,7 @@
 <template>
-    <q-page class="q-pa-lg ">
+    <div class="wp-100">
         <div class="row items-center q-mb-md">
-            <q-btn flat round icon="arrow_back" color="black" @click="$router.back()" />
-            <span class="fs-20 text-black text-bold q-ml-sm">Administradores de la Banca: {{ $route.params.dbs }}</span>
+            <span class="fs-20 text-black text-bold q-ml-sm">Administradores</span>
         </div>
         <q-table binary-state-sort @request="onRequest" v-model:pagination="pagination" loading-label="Cargando"
             :rows="admins" :columns="columns" flat :loading="loading || loadingPagination" row-key="id"
@@ -10,13 +9,12 @@
             :pagination-label="(start, end, total) => `${start}-${end} de ${total}`"
             rows-per-page-label="Admins por página">
         </q-table>
-    </q-page>
+    </div>
 </template>
 
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue';
 import { GetAdminsUseCase } from '@modules/admin/domain/useCases';
-import { useRoute } from 'vue-router';
 import type { IAdmin } from '@modules/admin/infrastructure/interfaces/admin.interface';
 import dayjs from 'dayjs';
 import type { ITablePagination } from '@common/interfaces';
@@ -25,9 +23,15 @@ import { useI18n } from 'vue-i18n'
 import { useQuasar } from 'quasar';
 import { getNotifyDefaultOptions } from '@common/helpers/notify-default-options.helper';
 
+const props = defineProps({
+    dbs: {
+        type: String,
+        required: true,
+    }
+});
+
 const { t } = useI18n()
 const $q = useQuasar();
-const $route = useRoute();
 const columns: any = [
     { name: 'name', align: 'left', label: 'Nombre', field: 'name', sortable: false },
     {
@@ -72,7 +76,7 @@ const handleGetAdmins = async (limit, offset, sort, sortOrder) => {
     const sortFilter = sort ? `&sort[${sort}]=${sortOrderFilter.toUpperCase()}` : '';
 
     const query = `?pagination[limit]=${limit}&pagination[offset]=${offset < 0 ? 0 : offset
-        }${sortFilter}&filter[banksDbs][]=${$route.params.dbs}`
+        }${sortFilter}&filter[banksDbs][]=${props.dbs}`
 
     try {
         const response: any = await GetAdminsUseCase.handle(query);

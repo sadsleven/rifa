@@ -29,17 +29,9 @@
 
             <template v-slot:body-cell-actions="props">
                 <q-td :props="props">
-                    <q-btn unelevated dense flat round color="app-primary" icon="mdi-shield-account"
-                        @click="$router.push(`/banks/${props.row.dbs}/admins`)">
-                        <q-tooltip>Administradores</q-tooltip>
-                    </q-btn>
-                    <q-btn unelevated dense flat round color="app-primary" icon="group"
-                        @click="$router.push(`/banks/${props.row.dbs}/users`)">
-                        <q-tooltip>Usuarios</q-tooltip>
-                    </q-btn>
-                    <q-btn unelevated dense flat round color="app-primary" icon="mdi-slot-machine"
-                        @click="$router.push(`/banks/admin/${props.row.dbs}/raffles`)">
-                        <q-tooltip>Rifas</q-tooltip>
+                    <q-btn unelevated dense flat round color="app-primary" icon="mdi-eye"
+                        @click="$router.push(`/banks/info/${props.row.slug}`)">
+                        <q-tooltip>Ver</q-tooltip>
                     </q-btn>
                     <q-btn unelevated dense flat round color="app-primary" icon="edit" @click="editBank(props.row)" />
                     <q-btn unelevated dense flat round color="app-danger" icon="mdi-delete"

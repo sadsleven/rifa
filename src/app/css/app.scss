@@ -180,3 +180,7 @@ body {
 @function hex-to-rgb-string($hex-color) {
   @return '#{color.red($hex-color)}, #{color.green($hex-color)}, #{color.blue($hex-color)}';
 }
+
+* {
+  word-break: break-all !important;
+}
