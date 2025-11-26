@@ -16,15 +16,10 @@ export class RolesGateway {
   private static readonly routes = rolesRoutes;
   private static readonly basePath = configuration().server.basePath;
 
-  static async getRoles(
-    token: string,
-    store: PiniaStore,
-    query: string,
-    admin: boolean = true
-  ) {
+  static async getRoles(token: string, store: PiniaStore, query: string) {
     const options: AxiosRequestConfig = {
       ...setBasePath(
-        admin ? this.routes.getRoles : this.routes.getRolesOwner,
+        store.raUser.bankDbs ? this.routes.getRolesOwner : this.routes.getRoles,
         this.basePath,
         query
       ),
@@ -173,7 +168,6 @@ export class RolesGateway {
       retryCondition: tokenExpired,
     });
   }
-
 
   static async enableRole(
     id: number,

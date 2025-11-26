@@ -17,6 +17,10 @@ const authRoutes = {
     url: 'auth/admin/me',
     method: 'GET',
   },
+  meOwner: {
+    url: 'auth/owner/me',
+    method: 'GET',
+  },
 };
 
 export type Route = Pick<AxiosRequestConfig, 'url' | 'method'>;

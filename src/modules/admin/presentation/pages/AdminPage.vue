@@ -144,10 +144,10 @@ const handleGetAdmins = async (limit, offset, sort, sortOrder) => {
     const sortOrderFilter = sortOrder ? 'desc' : 'asc';
     const sortFilter = sort ? `&sort[${sort}]=${sortOrderFilter.toUpperCase()}` : '';
 
-    const filterByDbs = isOwner ? `&filter[banksDbs][]=${authStore.GetUser?.bankDbs}` : ''
+    const filterOnlyAdmins = !isOwner ? '&filter[onlyAdmins]=true' : ''
 
     const query = `?pagination[limit]=${limit}&pagination[offset]=${offset < 0 ? 0 : offset
-        }${sortFilter}${filterByDbs}&filter[onlyAdmins]=true`
+        }${sortFilter}${filterOnlyAdmins}`
 
     try {
         const response: any = await GetAdminsUseCase.handle(query);

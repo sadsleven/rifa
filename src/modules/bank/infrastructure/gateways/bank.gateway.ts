@@ -49,6 +49,20 @@ export class BankGateway {
     });
   }
 
+  static async getOwnBank(token: string, store: PiniaStore) {
+    const options: AxiosRequestConfig = {
+      ...setBasePath(this.routes.getOwnBank, this.basePath),
+    };
+
+    return HTTP.request<{ data: IBank }>({
+      config: options,
+      token,
+      retries: 2,
+      onCatchError: refreshTokenAndRetry(store),
+      retryCondition: tokenExpired,
+    });
+  }
+
   static async createBank(data: IBankSchema, token: string, store: PiniaStore) {
     const options: AxiosRequestConfig = {
       ...setBasePath(this.routes.createBank, this.basePath),

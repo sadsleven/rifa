@@ -8,46 +8,46 @@
         <q-card>
           <q-card-section class="row">
             <div class="col-12 col-md-6 q-mb-md">
-              <div class="text-semi-bold">
+              <div class=" text-semi-bold">
                 Nombre:
               </div>
-              <div>{{ bank.name ?? 'No disponible' }}</div>
+              <div class="fs-18">{{ bank.name ?? 'No disponible' }}</div>
             </div>
             <div class="col-12 col-md-6 q-mb-md">
               <div class="text-semi-bold">
                 DBS:
               </div>
-              <div>{{ bank.dbs ?? 'No disponible' }}</div>
+              <div class="fs-18">{{ bank.dbs ?? 'No disponible' }}</div>
             </div>
             <div class="col-12 col-md-6 q-mb-md">
               <div class="text-semi-bold">
                 URL Endpoint:
               </div>
-              <div>{{ bank.urlEndpoint ?? 'No disponible' }}</div>
+              <div class="fs-18">{{ bank.urlEndpoint ?? 'No disponible' }}</div>
             </div>
             <div class="col-12 col-md-6 q-mb-md">
               <div class="text-semi-bold">
                 Secret JWT:
               </div>
-              <div>{{ bank.secretJwt ?? 'No disponible' }}</div>
+              <div class="fs-18">{{ bank.secretJwt ?? 'No disponible' }}</div>
             </div>
             <div class="col-12 col-md-6 q-mb-md">
               <div class="text-semi-bold">
                 Hash Bank:
               </div>
-              <div>{{ bank.hashBank ?? 'No disponible' }}</div>
+              <div class="fs-18">{{ bank.hashBank ?? 'No disponible' }}</div>
             </div>
             <div class="col-12 col-md-6 q-mb-md">
               <div class="text-semi-bold">
                 URL Background:
               </div>
-              <div>{{ bank.urlBg ?? 'No disponible' }}</div>
+              <div class="fs-18">{{ bank.urlBg ?? 'No disponible' }}</div>
             </div>
             <div class="col-12 col-md-6 q-mb-md">
               <div class="text-semi-bold">
                 URL Logo:
               </div>
-              <div>{{ bank.urlLogo ?? 'No disponible' }}</div>
+              <div class="fs-18">{{ bank.urlLogo ?? 'No disponible' }}</div>
             </div>
           </q-card-section>
         </q-card>
@@ -61,14 +61,12 @@
 
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue';
-import { useAuthStore } from '@modules/auth/domain/store';
-import { GetBankBySlugUseCase } from '@modules/bank/domain/useCases/get-bank-by-slug.useCase';
+import { GetOwnBankUseCase } from '@modules/bank/domain/useCases';
 import type { IBank } from '@modules/bank/infrastructure/interfaces/bank.interface';
 
-const authStore = useAuthStore();
 const bank = ref<IBank>({
   id: 0,
-  dbs: authStore.GetUser?.bankDbs,
+  dbs: null,
   name: null,
   urlEndpoint: null,
   secretJwt: null,
@@ -79,17 +77,14 @@ const bank = ref<IBank>({
 const isLoading = ref(false);
 
 onMounted(async () => {
-  const slug = authStore.GetUser?.bankDbs;
-  if (slug) {
-    isLoading.value = true;
-    try {
-      const response: any = await GetBankBySlugUseCase.handle(slug);
-      if (response) {
-        bank.value = response.data;
-      }
-    } finally {
-      isLoading.value = false;
+  isLoading.value = true;
+  try {
+    const response: any = await GetOwnBankUseCase.handle();
+    if (response) {
+      bank.value = response.data;
     }
+  } finally {
+    isLoading.value = false;
   }
 });
 </script>

@@ -7,21 +7,17 @@ import { AxiosError } from 'axios';
 import { Catch } from '@common/decorators/catch.decorator';
 import { DefaultCatch } from '@common/decorators/default-catch.decorator';
 import { ZodError } from 'zod';
-import { RolesGateway } from '@modules/roles/infrastructure/gateways/roles.gateway';
+import { BankGateway } from '@modules/bank/infrastructure/gateways/bank.gateway';
 import { useAuthStore } from '@modules/auth/domain/store';
 
-export class GetRolesUseCase {
+export class GetOwnBankUseCase {
   @DefaultCatch(defaultCatchError)
   @Catch(AxiosError, axiosCatchError)
   @Catch(ZodError, zodCatchError)
-  static async handle(query: string) {
+  static async handle() {
     const authStore = useAuthStore();
 
-    const result = await RolesGateway.getRoles(
-      authStore.GetToken,
-      authStore,
-      query
-    );
+    const result = await BankGateway.getOwnBank(authStore.GetToken, authStore);
     return result;
   }
 }

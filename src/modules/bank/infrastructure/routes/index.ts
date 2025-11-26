@@ -29,6 +29,10 @@ const bankRoutes = {
     url: (id: number) => `admin/banks/${id}/disabled`,
     method: 'PATCH',
   },
+  getOwnBank: {
+    url: 'owner/bank',
+    method: 'GET',
+  },
 };
 
 export type Route = Pick<AxiosRequestConfig, 'url' | 'method'>;

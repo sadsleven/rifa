@@ -37,7 +37,10 @@ export class AuthGateway {
 
   static async authMe(token: string, store: PiniaStore) {
     const options: AxiosRequestConfig = {
-      ...setBasePath(this.routes.me, this.basePath),
+      ...setBasePath(
+        store.raUser.bankDbs ? this.routes.meOwner : this.routes.me,
+        this.basePath
+      ),
     };
 
     return HTTP.request<{ user: IUser }>({

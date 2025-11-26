@@ -15,14 +15,12 @@ export class AdminGateway {
   private static readonly routes = adminRoutes;
   private static readonly basePath = configuration().server.basePath;
 
-  static async getAdmins(
-    token: string,
-    store: PiniaStore,
-    query: string = ''
-  ) {
+  static async getAdmins(token: string, store: PiniaStore, query: string = '') {
     const options: AxiosRequestConfig = {
       ...setBasePath(
-        this.routes.getAdmins,
+        store.raUser.bankDbs
+          ? this.routes.getAdminsOwner
+          : this.routes.getAdmins,
         this.basePath,
         query
       ),
@@ -37,15 +35,13 @@ export class AdminGateway {
     });
   }
 
-  static async getAdminById(
-    id: number,
-    token: string,
-    store: PiniaStore
-  ) {
+  static async getAdminById(id: number, token: string, store: PiniaStore) {
     const options: AxiosRequestConfig = {
       ...setBasePath(
         {
-          url: this.routes.getAdminById.url(id),
+          url: store.raUser.bankDbs
+            ? this.routes.getAdminByIdOwner.url(id)
+            : this.routes.getAdminById.url(id),
           method: this.routes.getAdminById.method,
         },
         this.basePath
@@ -68,7 +64,9 @@ export class AdminGateway {
   ) {
     const options: AxiosRequestConfig = {
       ...setBasePath(
-        this.routes.createAdmin,
+        store.raUser.bankDbs
+          ? this.routes.createAdminOwner
+          : this.routes.createAdmin,
         this.basePath
       ),
       data,
@@ -92,7 +90,9 @@ export class AdminGateway {
     const options: AxiosRequestConfig = {
       ...setBasePath(
         {
-          url: this.routes.updateAdmin.url(id),
+          url: store.raUser.bankDbs
+            ? this.routes.updateAdminOwner.url(id)
+            : this.routes.updateAdmin.url(id),
           method: this.routes.updateAdmin.method,
         },
         this.basePath
@@ -109,15 +109,13 @@ export class AdminGateway {
     });
   }
 
-  static async deleteAdmin(
-    id: number,
-    token: string,
-    store: PiniaStore
-  ) {
+  static async deleteAdmin(id: number, token: string, store: PiniaStore) {
     const options: AxiosRequestConfig = {
       ...setBasePath(
         {
-          url: this.routes.deleteAdmin.url(id),
+          url: store.raUser.bankDbs
+            ? this.routes.deleteAdminOwner.url(id)
+            : this.routes.deleteAdmin.url(id),
           method: this.routes.deleteAdmin.method,
         },
         this.basePath
@@ -142,7 +140,9 @@ export class AdminGateway {
     const options: AxiosRequestConfig = {
       ...setBasePath(
         {
-          url: this.routes.updateAdminRoles.url(id),
+          url: store.raUser.bankDbs
+            ? this.routes.updateAdminRolesOwner.url(id)
+            : this.routes.updateAdminRoles.url(id),
           method: this.routes.updateAdminRoles.method,
         },
         this.basePath
@@ -159,15 +159,13 @@ export class AdminGateway {
     });
   }
 
-  static async enableAdmin(
-    id: number,
-    token: string,
-    store: PiniaStore
-  ) {
+  static async enableAdmin(id: number, token: string, store: PiniaStore) {
     const options: AxiosRequestConfig = {
       ...setBasePath(
         {
-          url: this.routes.enableAdmin.url(id),
+          url: store.raUser.bankDbs
+            ? this.routes.enableAdminOwner.url(id)
+            : this.routes.enableAdmin.url(id),
           method: this.routes.enableAdmin.method,
         },
         this.basePath
@@ -183,15 +181,13 @@ export class AdminGateway {
     });
   }
 
-  static async disableAdmin(
-    id: number,
-    token: string,
-    store: PiniaStore
-  ) {
+  static async disableAdmin(id: number, token: string, store: PiniaStore) {
     const options: AxiosRequestConfig = {
       ...setBasePath(
         {
-          url: this.routes.disableAdmin.url(id),
+          url: store.raUser.bankDbs
+            ? this.routes.disableAdminOwner.url(id)
+            : this.routes.disableAdmin.url(id),
           method: this.routes.disableAdmin.method,
         },
         this.basePath

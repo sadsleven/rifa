@@ -7,7 +7,7 @@
     <div v-if="!isLoading" class="row q-col-gutter-md">
       <div class="col-12">
         <q-card>
-          <q-card-section class="row" style="word-break: break-all;">
+          <q-card-section class="row">
             <div class="col-12 col-md-6 q-mb-md">
               <div class=" text-semi-bold">
                 Nombre:

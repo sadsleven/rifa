@@ -136,7 +136,7 @@ const handleGetRoles = async (limit, offset, sort, sortOrder) => {
         }${sortFilter}`
 
     try {
-        const response: any = await GetRolesUseCase.handle(query, props.admin);
+        const response: any = await GetRolesUseCase.handle(query);
         roles.value = response.data.data;
         pagination.value.rowsNumber = response.data.pagination.total;
         pagination.value.rowsPerPage = response.data.pagination.limit;
