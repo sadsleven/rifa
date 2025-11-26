@@ -81,7 +81,7 @@ onMounted(async () => {
   try {
     const response: any = await GetOwnBankUseCase.handle();
     if (response) {
-      bank.value = response.data;
+      bank.value = response.data.data;
     }
   } finally {
     isLoading.value = false;
