@@ -28,7 +28,11 @@ const props = defineProps({
     raffleId: {
         type: Number,
         required: true,
-    }
+    },
+    dbs: {
+        type: String,
+        required: false,
+    },
 });
 
 const { t } = useI18n()
@@ -50,7 +54,7 @@ const handleGetTickets = async () => {
     loading.value = true;
 
     try {
-        const response: any = await GetRafflesTopTenUseCase.handle(Number(props.raffleId), '');
+        const response: any = await GetRafflesTopTenUseCase.handle(Number(props.raffleId), '', props.dbs);
         topTenBuyers.value = response.data.data;
         loading.value = false;
     }

@@ -108,7 +108,7 @@
 
             <div class="row q-gutter-sm justify-end">
               <q-btn label="Cancelar" color="grey" flat @click="closeEmailDialog" />
-              <q-btn label="Enviar Código" type="submit" color="app-primary" :loading="emailLoading" />
+              <q-btn label="Cambiar" type="submit" color="app-primary" :loading="emailLoading" />
             </div>
           </q-form>
 
@@ -128,7 +128,7 @@
 
             <div class="row q-gutter-sm justify-end">
               <q-btn label="Cancelar" color="grey" flat @click="closeEmailDialog" />
-              <q-btn label="Verificar" type="submit" color="app-primary" :loading="emailLoading" />
+              <q-btn label="Cambiar" type="submit" color="app-primary" :loading="emailLoading" />
             </div>
           </q-form>
         </q-card-section>
@@ -145,12 +145,12 @@
         <q-card-section class="q-pt-none">
           <q-form v-if="!phoneOtpSent" ref="phoneRequestFormRef" @submit="handleRequestPhoneChange">
             <q-input v-model="phoneForm.phone" color="app-primary" label="Nuevo Teléfono" outlined class="q-mb-md"
-              hint="Formato: +584141234567" :rules="[validatePhoneRequest('phone')]">
+              :rules="[validatePhoneRequest('phone')]">
             </q-input>
 
             <div class="row q-gutter-sm justify-end">
               <q-btn label="Cancelar" color="grey" flat @click="closePhoneDialog" />
-              <q-btn label="Enviar Código" type="submit" color="app-primary" :loading="phoneLoading" />
+              <q-btn label="Cambiar" type="submit" color="app-primary" :loading="phoneLoading" />
             </div>
           </q-form>
 
@@ -170,7 +170,7 @@
 
             <div class="row q-gutter-sm justify-end">
               <q-btn label="Cancelar" color="grey" flat @click="closePhoneDialog" />
-              <q-btn label="Verificar" type="submit" color="app-primary" :loading="phoneLoading" />
+              <q-btn label="Cambiar" type="submit" color="app-primary" :loading="phoneLoading" />
             </div>
           </q-form>
         </q-card-section>

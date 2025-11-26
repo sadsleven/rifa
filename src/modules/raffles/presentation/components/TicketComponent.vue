@@ -36,7 +36,11 @@ const props = defineProps({
     raffleId: {
         type: Number,
         required: true,
-    }
+    },
+    dbs: {
+        type: String,
+        required: false,
+    },
 });
 
 const { t } = useI18n()
@@ -116,7 +120,7 @@ const handleGetTickets = async (limit, offset, sort, sortOrder) => {
         }${sortFilter}`
 
     try {
-        const response: any = await GetRafflesTicketsUseCase.handle(Number(props.raffleId), query);
+        const response: any = await GetRafflesTicketsUseCase.handle(Number(props.raffleId), query, props.dbs);
         tickets.value = response.data.data;
         pagination.value.rowsNumber = response.data.pagination.total;
         pagination.value.rowsPerPage = response.data.pagination.limit;

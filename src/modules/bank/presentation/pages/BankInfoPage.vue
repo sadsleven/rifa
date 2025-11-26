@@ -5,7 +5,7 @@
       Banca {{ bank.name ?? slug }}
     </h1>
     <div v-if="!isLoading" class="row q-col-gutter-md">
-      <div class="col-12">
+      <div class="col-12" style="word-break: break-all !important;">
         <q-card>
           <q-card-section class="row">
             <div class="col-12 col-md-6 q-mb-md">

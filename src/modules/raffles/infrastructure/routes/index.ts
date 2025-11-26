@@ -37,6 +37,16 @@ const raffleRoutes = {
     url: (id: number) => `owner/raffles/${id}/top-ten`,
     method: 'GET',
   },
+  getTicketsAdmin: {
+    url: (dbs: string, id: number) =>
+      `admin/banks/${dbs}/raffles/${id}/tickets`,
+    method: 'GET',
+  },
+  getTopTenAdmin: {
+    url: (dbs: string, id: number) =>
+      `admin/banks/${dbs}/raffles/${id}/top-ten`,
+    method: 'GET',
+  },
   processResults: {
     url: (id: number) => `owner/raffles/${id}/process-results`,
     method: 'PATCH',

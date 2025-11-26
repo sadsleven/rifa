@@ -14,14 +14,15 @@ export class GetRafflesTicketsUseCase {
   @DefaultCatch(defaultCatchError)
   @Catch(AxiosError, axiosCatchError)
   @Catch(ZodError, zodCatchError)
-  static async handle(id: number, query: string = '') {
+  static async handle(id: number, query: string = '', dbs?: string) {
     const authStore = useAuthStore();
 
     const result = await RaffleGateway.getTickets(
       id,
       authStore.GetToken,
       authStore,
-      query
+      query,
+      dbs
     );
     return result;
   }

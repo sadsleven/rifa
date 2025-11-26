@@ -132,12 +132,15 @@ export class RaffleGateway {
     id: number,
     token: string,
     store: PiniaStore,
-    query: string = ''
+    query: string = '',
+    dbs?: string
   ) {
     const options: AxiosRequestConfig = {
       ...setBasePath(
         {
-          url: this.routes.getTickets.url(id),
+          url: dbs
+            ? this.routes.getTicketsAdmin.url(dbs, id)
+            : this.routes.getTickets.url(id),
           method: this.routes.getTickets.method,
         },
         this.basePath,
@@ -158,12 +161,15 @@ export class RaffleGateway {
     id: number,
     token: string,
     store: PiniaStore,
-    query: string = ''
+    query: string = '',
+    dbs?: string
   ) {
     const options: AxiosRequestConfig = {
       ...setBasePath(
         {
-          url: this.routes.getTopTen.url(id),
+          url: dbs
+            ? this.routes.getTopTenAdmin.url(dbs, id)
+            : this.routes.getTopTen.url(id),
           method: this.routes.getTopTen.method,
         },
         this.basePath,
@@ -180,11 +186,18 @@ export class RaffleGateway {
     });
   }
 
-  static async getRaffleBySlug(slug: string, token: string, store: PiniaStore) {
+  static async getRaffleBySlug(
+    slug: string,
+    token: string,
+    store: PiniaStore,
+    dbs?: string
+  ) {
     const options: AxiosRequestConfig = {
       ...setBasePath(
         {
-          url: this.routes.getRaffleBySlugOwner.url(slug),
+          url: dbs
+            ? this.routes.getRaffleBySlug.url(dbs, slug)
+            : this.routes.getRaffleBySlugOwner.url(slug),
           method: this.routes.getRaffleBySlugOwner.method,
         },
         this.basePath
